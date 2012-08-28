@@ -10,7 +10,7 @@ sys.path.append(
     )
 import argparse
 
-def main():
+def main(args):
     pass
 
 def _create_parser():
@@ -95,3 +95,4 @@ def _create_parser():
 if __name__ == "__main__":
     parser = _create_parser()
     args = parser.parse_args()
+    main(args)
