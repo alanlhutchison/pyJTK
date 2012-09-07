@@ -34,6 +34,11 @@ def two_sum(a,b):
         return (x,y)
 
 def expansion_sum(series):
+    if len(series) == 0:
+        return (None, 0.0)
+    elif len(series) == 1:
+        return (None, series[0])
+    
     series = sorted(series, key=lambda v: abs(v))
     z = fast_two_sum(series[1], series[0])
     h = None
