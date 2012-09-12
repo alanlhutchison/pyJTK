@@ -11,6 +11,7 @@ del p, q # keep globals clean
 import unittest
 import numpy as np
 import normal_distribution as nd
+import utility as u
 from math import sqrt
 
 class DistributionSpec(unittest.TestCase):
@@ -18,15 +19,18 @@ class DistributionSpec(unittest.TestCase):
         pass
     
     def test_initialization_with_int(self):
-        case = nd.NormalDistribution(6,1)
+        times = u.make_times(6,1)
+        case = nd.NormalDistribution(times)
         self.assertTrue(isinstance(case,nd.NormalDistribution))
     
     def test_initialization_with_array(self):
-        case = nd.NormalDistribution(6,np.array([1.0]))
+        times = u.make_times(6,np.array([1.0]))
+        case = nd.NormalDistribution(times)
         self.assertTrue(isinstance(case,nd.NormalDistribution))
     
     def test_score_bounds(self):
-        case = nd.NormalDistribution(10,1.0)
+        times = u.make_times(10,1.0)
+        case = nd.NormalDistribution(times)
         
         c_maximum = 45.0
         c_expected = 22.5
@@ -35,14 +39,16 @@ class DistributionSpec(unittest.TestCase):
         self.assertEqual(case.expected, c_expected)
     
     def test_standard_deviations(self):
-        case = nd.NormalDistribution(5,2)
+        times = u.make_times(5,2)
+        case = nd.NormalDistribution(times)
         
         c_stdev = sqrt((2300. - 5.*28.) / 72.0)
         
         self.assertEqual(case.stdev, c_stdev)
     
     def test_p_values(self):
-        case = nd.NormalDistribution(10,1.0)
+        times = u.make_times(10,1.0)
+        case = nd.NormalDistribution(times)
         
         self.assertEqual(case.p_value(None), 1.0)
         # need to test the right cases here...

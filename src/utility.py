@@ -14,6 +14,6 @@ def make_times(timepoints, reps=1):
             times = reps[0] * np.ones(timepoints, dtype='float')
             
     except: # reps is not array-like
-        times = reps * np.ones(len(timepoints), dtype='float')
+        times = reps * np.ones(timepoints, dtype='float')
     
     return times

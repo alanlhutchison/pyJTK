@@ -10,16 +10,7 @@ from math import sqrt
 
 class NormalDistribution:
 
-    def __init__(self, timepoints, reps=1):
-        try:
-            if len(reps) == timepoints:
-                times = np.array(reps)
-            else:
-                times = reps[0] * np.ones(timepoints, dtype='float')
-            
-        except: # reps is not array-like
-            times = reps * np.ones(timepoints, dtype='float')
-        
+    def __init__(self, times):
         self.stdev = self._compute_stdev(times)
         self.max_score = self._compute_max_score(times)
         self.expected = self.max_score / 2.0

@@ -36,7 +36,7 @@ class TimesSpec(unittest.TestCase):
             self.assertEqual(p[0], p[1])
     
     def test_full(self):
-        points = np.arange(12,dtype='float')
+        points = 12
         reps = np.array([random.randint(1,10) for i in range(12)],dtype='float')
         
         expect = reps
