@@ -26,13 +26,28 @@ class ReferencesSpec(unittest.TestCase):
     def test_initialization(self):
         self.assertTrue(isinstance(self.case, R.References))
     
+    def test_make_series(self):
+        period = random.choice(range(5,12))
+        series = self.case.make_series(period,0.0)
+        
+        self.assertEqual(24, len(series))
+        self.assertEqual(series[0.0], 1.0)
+    
     def test_series(self):
+        N = 0
+        
         for ser in self.case.series():
             self.assertEqual(24, len(ser[2]))
+            
             self.assertTrue(ser[0] in range(5,12))
             self.assertTrue(ser[1] <= ser[0])
+            
             if ser[1] == 0.0:
                 self.assertEqual(ser[2][0], 1.0)
+            N += 1
+        else:
+            self.assertEqual(N, sum(range(5,12)))
+        
     
     def tearDown(self):
         pass

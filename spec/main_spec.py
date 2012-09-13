@@ -46,7 +46,7 @@ class RunSeriesSpec(unittest.TestCase):
     def test_run(self):
         for per in range(6,13):
             ser = self._generate_series(per)
-            cper,coff,pval = self.case.run_series(ser)
+            cper,coff,camp,ctau = self.case.run_series(ser)
             self.assertEqual(per,cper)
     
     def tearDown(self):
@@ -61,7 +61,7 @@ class BonferroniSpec(unittest.TestCase):
         ser = [10 * random.random() for i in range(n)]
         
         expect = np.array([s/float(n) for s in ser],dtype='float')
-        actual = self.case.bonferroni(ser)
+        actual = self.case._bonferroni(ser)
         
         for p in zip(expect,actual):
             self.assertEqual(p[0], p[1])

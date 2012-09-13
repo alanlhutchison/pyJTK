@@ -5,7 +5,6 @@ import os.path
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 
 import numpy as np
-from math import pi
 
 class References:
     
@@ -13,6 +12,9 @@ class References:
         self.periods = periods
         self.interval = interval
         self.times = times
+        
+        n = len(times)
+        self.timerange = np.array(range(n),dtype='float')
         
     def _expand(self, values):
         if len(values) != len(self.times):
@@ -29,26 +31,29 @@ class References:
         ranks = [ix.index(i) / n for i in range(len(series))]
         
         return ranks
+
+    def make_series(self, period, offset, func=None):
+        if not func:
+            func = np.cos
+        pihat = round(np.pi,4)
+        
+        time_to_angle = 2 * pihat / period
+        dtheta = (offset * time_to_angle) / 2.0
+        thetas = self.timerange * time_to_angle
+        
+        vals = func(thetas + dtheta)
+        ranks = self.ranks(vals)
+        series = self._expand(ranks)
+        
+        return series
     
     def series(self, func=None):
         if not func:
             func = np.cos
         
-        pihat = round(pi,4)
-        n = len(self.times)
-        timerange = np.array(range(n),dtype='float')
-        
         for period in self.periods:
-            time_to_angle = 2 * pihat / period
             for offset in range(period):
-                dtheta = (offset * time_to_angle) / 2.0
-                
-                thetas = timerange * time_to_angle
-                vals = func(thetas + dtheta)
-                ranks = self.ranks(vals)
-                series = self._expand(ranks)
-                
-                yield (period, offset, series)
-
+                yield (period, offset, self.make_series(period, offset, func))
+        
 if __name__ == "__main__":
     print "This is a module for generating reference series."

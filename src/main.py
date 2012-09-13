@@ -27,10 +27,14 @@ class JTKCYCLE:
         self.references = r.References(periods, times, interval)
     
     def _run(self, series, refp):
-        refs = refp[2]
-        s_score = self.scorer.score(series, refs)
+        per,off,ser = refp
+        
+        amp = self.est_amp(ser, per)
+        
+        s_score = self.scorer.score(series, ser)
         p_score = self.distribution.p_value(s_score)
-        return (refp[0], refp[1], p_score)
+        
+        return (per, off, amp, p_score)
     
     def run_series(self, series):
         if len(series) != self.timepoints:
@@ -40,11 +44,40 @@ class JTKCYCLE:
             [self._run(series,ref) for ref in self.references.series()],
             dtype='float'
             )
-        scores = self.bonferroni([r[2] for r in results])
-        results = [(r[0],r[1],s) for r,s in zip(results,scores)]
-        return min(results, key=lambda p:p[2])
+        results = self.do_bonferroni(results)
+        best = self.best(results)
+        
+        return best
     
-    def bonferroni(self, scores):
+    def best(self, results):
+        scores = [r[3] for r in results]
+        
+        min_score = min(scores)
+        results = filter(lambda r: r[3] == min_score, results)
+        
+        per = np.average([r[0] for r in results])
+        lag = np.average([r[1] for r in results])
+        amp = np.average([r[2] for r in results])
+        tau = abs(min_score) / self.distribution.max_score
+        
+        return (per, lag, amp, tau)
+    
+    def est_amp(self, series, period):
+        factor = np.sqrt(2.0)
+        
+        ser = np.array(series[:period], dtype='float')
+        signs = np.sign(ser)
+        
+        
+        
+        return 0.0
+    
+    def do_bonferroni(self, uncorrected):
+        scores = self._bonferroni([u[3] for u in uncorrected])
+        corrected = [(u[0],u[1],u[2],s) for u,s in zip(uncorrected,scores)]
+        return corrected
+    
+    def _bonferroni(self, scores):
         scores = np.array(scores, dtype='float')
         scores = scores / len(scores)
         return scores
