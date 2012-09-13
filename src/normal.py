@@ -29,14 +29,16 @@ class NormalDistribution:
     
     def p_value(self, S):
         if not S:
-            p = 1.0
-        else:
-            M = self.max_score
-            score = (abs(S) + M) / 2.0
-            p = 2 * norm.sf(-(score-0.5),
-                            loc=self.expected,
-                            scale=self.stdev)
-            p = 0.0
+            return 1.0
+        
+        M = self.max_score
+        score = (abs(S) + M) / 2.0
+        
+        a = -1.0 * (score - 0.5)
+        b = -1.0 * self.expected
+        c = self.stdev
+        
+        p = 2.0 * norm.cdf(a,loc=b,scale=c)
         return p
 
 if __name__ == "__main__":

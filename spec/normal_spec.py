@@ -10,23 +10,13 @@ del p, q # keep globals clean
 
 import unittest
 import numpy as np
-import normal_distribution as nd
+import normal as nd
 import utility as u
 from math import sqrt
 
 class DistributionSpec(unittest.TestCase):
     def setUp(self):
         pass
-    
-    def test_initialization_with_int(self):
-        times = u.make_times(6,1)
-        case = nd.NormalDistribution(times)
-        self.assertTrue(isinstance(case,nd.NormalDistribution))
-    
-    def test_initialization_with_array(self):
-        times = u.make_times(6,np.array([1.0]))
-        case = nd.NormalDistribution(times)
-        self.assertTrue(isinstance(case,nd.NormalDistribution))
     
     def test_score_bounds(self):
         times = u.make_times(10,1.0)

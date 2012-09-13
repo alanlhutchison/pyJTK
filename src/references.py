@@ -18,12 +18,21 @@ class References:
         if len(values) != len(self.times):
             raise Exception("unexpected elem count in expansion")
         pairs = zip(values, self.times)
-        comps = [p[0] * np.ones(p[1]) for p in pairs]
+        comps = tuple([p[0] * np.ones(p[1]) for p in pairs])
         return np.concatenate(comps)
+
+    def ranks(self, series):
+        n = float(len(series)) - 1.0
         
-    def series(self, gen_f=None):
-        if not gen_f:
-            gen_f = np.cos
+        ix = range(len(series))
+        ix.sort(key=lambda j: series[j])
+        ranks = [ix.index(i) / n for i in range(len(series))]
+        
+        return ranks
+    
+    def series(self, func=None):
+        if not func:
+            func = np.cos
         
         pihat = round(pi,4)
         n = len(self.times)
@@ -35,8 +44,9 @@ class References:
                 dtheta = (offset * time_to_angle) / 2.0
                 
                 thetas = timerange * time_to_angle
-                vals = gen_f(thetas + dtheta)
-                series = self._expand(vals)
+                vals = func(thetas + dtheta)
+                ranks = self.ranks(vals)
+                series = self._expand(ranks)
                 
                 yield (period, offset, series)
 

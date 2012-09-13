@@ -31,7 +31,9 @@ class ReferencesSpec(unittest.TestCase):
             self.assertEqual(24, len(ser[2]))
             self.assertTrue(ser[0] in range(5,12))
             self.assertTrue(ser[1] <= ser[0])
-
+            if ser[1] == 0.0:
+                self.assertEqual(ser[2][0], 1.0)
+    
     def tearDown(self):
         pass
 
