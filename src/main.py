@@ -29,10 +29,10 @@ class JTKCYCLE:
     def _run(self, series, refp):
         per,off,ser = refp
         
-        amp = self.est_amp(ser, per)
-        
         s_score = self.scorer.score(series, ser)
         p_score = self.distribution.p_value(s_score)
+        
+        amp = self.est_amp(ser, per, off, s_score)
         
         return (per, off, amp, p_score)
     
@@ -57,20 +57,27 @@ class JTKCYCLE:
         
         per = np.average([r[0] for r in results])
         lag = np.average([r[1] for r in results])
-        amp = np.average([r[2] for r in results])
+        amp = max(0.0, np.average([r[2] for r in results]))
         tau = abs(min_score) / self.distribution.max_score
         
         return (per, lag, amp, tau)
     
-    def est_amp(self, series, period):
+    def est_amp(self, series, period, offset, S):
+        sref = self.references.make_series(period,
+                                           offset,
+                                           signed=True,
+                                           tlim=period)
+        s = np.sign(S) or 1.0
+        
+        ser = np.array(series[:len(sref)], dtype='float')
+        w = (ser - np.median(ser))
+        
+        amps = s * sref * w
+        amps = filter(lambda a: a != 0.0, amps)
+        amp = np.median(amps)
+        
         factor = np.sqrt(2.0)
-        
-        ser = np.array(series[:period], dtype='float')
-        signs = np.sign(ser)
-        
-        
-        
-        return 0.0
+        return amp * factor
     
     def do_bonferroni(self, uncorrected):
         scores = self._bonferroni([u[3] for u in uncorrected])

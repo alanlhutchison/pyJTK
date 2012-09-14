@@ -31,23 +31,57 @@ class JTKCYCLE_Spec(unittest.TestCase):
     def tearDown(self):
         pass
 
+class EstAmpSpec(unittest.TestCase):
+    def setUp(self):
+        self.case = JTKCYCLE(TEST_N,1,None,1.0)
+    
+    def _generate_series(self, amp, per):
+        pihat = round(np.pi,4)
+        times = np.array(range(TEST_N), dtype='float')
+        times = np.array(times * 2 * pihat / per, dtype='float')
+        
+        series = amp * np.cos(times)
+        return series
+    
+    def test_estimation(self):
+        for amp in map(float, range(1,15)):
+            per = 12
+            ser = self._generate_series(amp,per)
+            
+            camp = self.case.est_amp(ser, per, 0.0, 1.0)
+            try:
+                self.assertEqual(round(camp),amp)
+            except:
+                print camp, amp
+    
+    def tearDown(self):
+        pass
+
 class RunSeriesSpec(unittest.TestCase):
     def setUp(self):
         self.case = JTKCYCLE(TEST_N,1,range(6,13),2.0)
     
-    def _generate_series(self, period):
+    def _generate_series(self, period, offset):
         pihat = round(np.pi,4)
-        times = np.array(range(TEST_N), dtype='float')
-        times = times * 2 * pihat / period
+        factor = 2 * pihat / period
+        
+        times = np.array(range(TEST_N))
+        times = times * factor
+        
+        times = times + (0.5 * offset * factor)
         
         series = np.cos(times)
         return series
     
     def test_run(self):
         for per in range(6,13):
-            ser = self._generate_series(per)
+            off = random.choice(range(per))
+            
+            ser = self._generate_series(per,off)
             cper,coff,camp,ctau = self.case.run_series(ser)
+            
             self.assertEqual(per,cper)
+            self.assertEqual(off,coff)
     
     def tearDown(self):
         pass

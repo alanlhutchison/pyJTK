@@ -13,8 +13,57 @@ import references as R
 import random
 import numpy as np
 
-class ReferencesSpec(unittest.TestCase):
+class SeriesMakerSpec(unittest.TestCase):
+    def setUp(self):
+        n = 12
+        pers = [12]
+        times = 2.0 * np.ones(n)
+        inter = 2.0
+        
+        self.case = R.References(pers, times, inter)
+
+    def _get_spec(self):
+        per = random.randint(5,12)
+        off = random.choice(range(per))
+        return (per,off)
     
+    def test_ranked_series(self):
+        per,off = self._get_spec()
+        series = self.case.make_series(per,off)
+        for val in series:
+            self.assertTrue(val >= 0.0 and val <= 1.0)
+        
+        self.assertEqual(len(series), 24)
+        self._test_duplication(series)
+    
+    def test_signed_series(self):
+        per,off = self._get_spec()
+        series = self.case.make_series(per,off,signed=True)
+        for idx,val in enumerate(series):
+            self.assertTrue(val in (-1.0, 0.0, 1.0))
+        
+        self.assertEqual(len(series), 24)
+        self._test_duplication(series)
+    
+    def test_truncated_series(self):
+        per,off = self._get_spec()
+        aseries = self.case.make_series(per,off,signed=True,tlim=per)
+        bseries = self.case.make_series(per,off,tlim=per)
+        
+        self.assertEqual(len(aseries), per*2)
+        self.assertEqual(len(bseries), per*2)
+        
+        self._test_duplication(aseries)
+        self._test_duplication(bseries)
+        
+    def _test_duplication(self, series):
+        for i in range(len(series)/2):
+            self.assertEqual(series[2*i],series[2*i+1])
+        
+    def tearDown(self):
+        pass
+
+class ReferencesSpec(unittest.TestCase):
     def setUp(self):
         n = 12
         pers = range(5,12)
@@ -32,6 +81,14 @@ class ReferencesSpec(unittest.TestCase):
         
         self.assertEqual(24, len(series))
         self.assertEqual(series[0.0], 1.0)
+
+    def test_ranks(self):
+        series = [10.0*random.random() for i in range(20)]
+        ranked = self.case.ranks(series)
+        
+        for rank in ranked:
+            self.assertTrue(rank <= 1.0 and rank >= 0.0)
+            self.assertEqual(ranked.count(rank), 1)
     
     def test_series(self):
         N = 0
