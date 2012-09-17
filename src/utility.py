@@ -7,6 +7,8 @@ sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 import numpy as np
 
 def make_times(timepoints, reps=1):
+    """Generates an appropriately formatted timereps array.
+    Times contains repeated indexes corresponding to replicates."""
     
     try:
         if len(reps) == timepoints:
