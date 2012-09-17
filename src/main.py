@@ -12,8 +12,14 @@ import statistic as s
 import references as r
 
 class JTKCYCLE:
+    """Class encapsulating the logic for running a JTK-CYCLE statistical
+       test. Components are a score factory, a statistical distribution,
+       and a reference library."""
     
     def __init__(self, timepoints, reps, periods, interval=1):
+        """Init w/: timepoint count, repetition count, and search periods.
+        Opt. interval specifies time-unit distance between timepoints."""
+        
         times = u.make_times(timepoints, reps)
         
         self.timepoints = timepoints
@@ -22,6 +28,7 @@ class JTKCYCLE:
         self.periods = periods
         self.interval = interval
         
+        # score factory, distribution, and reference series generator
         self.scorer = s.ScoreFactory()
         self.distribution = t.NormalDistribution(times)
         self.references = r.References(periods, times, interval)
@@ -37,6 +44,7 @@ class JTKCYCLE:
         return (per, off, amp, p_score)
     
     def run_series(self, series):
+        """Input series is run through JTK-CYCLE."""
         if len(series) != self.timepoints:
             raise Exception("poorly formatted series.")
         
@@ -45,11 +53,13 @@ class JTKCYCLE:
             dtype='float'
             )
         results = self.do_bonferroni(results)
-        best = self.best(results)
+        best = self.find_best(results)
         
         return best
     
-    def best(self, results):
+    def find_best(self, results):
+        """From a series of results vs. reference library,
+        extracts characterization of best fitting reference."""
         scores = [r[3] for r in results]
         
         min_score = min(scores)
@@ -63,6 +73,7 @@ class JTKCYCLE:
         return (per, lag, amp, tau)
     
     def est_amp(self, series, period, offset, S):
+        """Estimates amplitude based on best fit reference series."""
         sref = self.references.make_series(period,
                                            offset,
                                            signed=True,
@@ -80,11 +91,13 @@ class JTKCYCLE:
         return amp * factor
     
     def do_bonferroni(self, uncorrected):
+        """Applies bonferroni correction to a series of results."""
         scores = self._bonferroni([u[3] for u in uncorrected])
         corrected = [(u[0],u[1],u[2],s) for u,s in zip(uncorrected,scores)]
         return corrected
     
     def _bonferroni(self, scores):
+        """Arithmetic helper function for bonferroni correction."""
         scores = np.array(scores, dtype='float')
         scores = scores / len(scores)
         return scores

@@ -22,6 +22,7 @@ class JTKCYCLE_Spec(unittest.TestCase):
         self.case = JTKCYCLE(TEST_N,1,None,1.0)
     
     def test_initialization(self):
+        """It should initialize correctly, and memoize initialization values."""
         self.assertTrue(isinstance(self.case,JTKCYCLE))
         
         self.assertEqual(self.case.timepoints, TEST_N)
@@ -44,15 +45,13 @@ class EstAmpSpec(unittest.TestCase):
         return series
     
     def test_estimation(self):
+        """It should correctly estimate amplitudes of the signal."""
         for amp in map(float, range(1,15)):
             per = 12
             ser = self._generate_series(amp,per)
             
             camp = self.case.est_amp(ser, per, 0.0, 1.0)
-            try:
-                self.assertEqual(round(camp),amp)
-            except:
-                print camp, amp
+            self.assertEqual(round(camp),amp)
     
     def tearDown(self):
         pass
@@ -74,6 +73,7 @@ class RunSeriesSpec(unittest.TestCase):
         return series
     
     def test_run(self):
+        """It should correctly estimate best periods and offsets of signal."""
         for per in range(6,13):
             off = random.choice(range(per))
             
@@ -91,6 +91,7 @@ class BonferroniSpec(unittest.TestCase):
         self.case = JTKCYCLE(12,1,None)
     
     def test_bonferroni(self):
+        """It should apply a Bonferroni correction."""
         n = random.randint(10,50)
         ser = [10 * random.random() for i in range(n)]
         
