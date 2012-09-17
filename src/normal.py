@@ -9,8 +9,10 @@ from scipy.stats import norm
 from math import sqrt
 
 class NormalDistribution:
+    """An normal approximation of the J-T Score distribution."""
 
     def __init__(self, times):
+        """Init w. replicated times array (see utility.py)."""
         self.stdev = self._compute_stdev(times)
         self.max_score = self._compute_max_score(times)
         self.expected = self.max_score / 2.0
@@ -28,6 +30,7 @@ class NormalDistribution:
         return sdv
     
     def p_value(self, S):
+        """Public handle for generating a p-value from a tau score S."""
         if not S:
             return 1.0
         

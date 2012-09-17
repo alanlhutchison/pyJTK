@@ -15,10 +15,13 @@ import utility as u
 from math import sqrt
 
 class DistributionSpec(unittest.TestCase):
+    """describe normal distribution approximation"""
+    
     def setUp(self):
         pass
     
     def test_score_bounds(self):
+        """it calculates the correct maximum and expected scores"""
         times = u.make_times(10,1.0)
         case = nd.NormalDistribution(times)
         
@@ -29,6 +32,7 @@ class DistributionSpec(unittest.TestCase):
         self.assertEqual(case.expected, c_expected)
     
     def test_standard_deviations(self):
+        """it computes a reasonable approximation of the standard dev."""
         times = u.make_times(5,2)
         case = nd.NormalDistribution(times)
         
@@ -37,11 +41,14 @@ class DistributionSpec(unittest.TestCase):
         self.assertEqual(case.stdev, c_stdev)
     
     def test_p_values(self):
+        """it computes appropriate p-values for elements in distribution"""
         times = u.make_times(10,1.0)
         case = nd.NormalDistribution(times)
         
         self.assertEqual(case.p_value(None), 1.0)
-        # need to test the right cases here...
+        
+        # TODO: ANDY! YOU NEED TO TEST THE RIGHT CASES HERE.
+        #       TAKE SOME TIME TO CHOOSE THE RIGHT TESTS.
     
     def tearDown(self):
         pass
