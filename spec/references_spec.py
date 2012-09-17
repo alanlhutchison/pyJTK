@@ -14,6 +14,8 @@ import random
 import numpy as np
 
 class SeriesMakerSpec(unittest.TestCase):
+    """Describe reference series factory method."""
+    
     def setUp(self):
         n = 12
         pers = [12]
@@ -28,6 +30,7 @@ class SeriesMakerSpec(unittest.TestCase):
         return (per,off)
     
     def test_ranked_series(self):
+        """It can be used to build rank-ordered series w. period/phase."""
         per,off = self._get_spec()
         series = self.case.make_series(per,off)
         for val in series:
@@ -37,6 +40,7 @@ class SeriesMakerSpec(unittest.TestCase):
         self._test_duplication(series)
     
     def test_signed_series(self):
+        """It can be used to build sign-valued series with period/phase."""
         per,off = self._get_spec()
         series = self.case.make_series(per,off,signed=True)
         for idx,val in enumerate(series):
@@ -46,6 +50,7 @@ class SeriesMakerSpec(unittest.TestCase):
         self._test_duplication(series)
     
     def test_truncated_series(self):
+        """It can be used to generate shortened versions of time-series."""
         per,off = self._get_spec()
         aseries = self.case.make_series(per,off,signed=True,tlim=per)
         bseries = self.case.make_series(per,off,tlim=per)
@@ -64,6 +69,8 @@ class SeriesMakerSpec(unittest.TestCase):
         pass
 
 class ReferencesSpec(unittest.TestCase):
+    """Describe reference series generator class."""
+    
     def setUp(self):
         n = 12
         pers = range(5,12)
@@ -73,9 +80,11 @@ class ReferencesSpec(unittest.TestCase):
         self.case = R.References(pers, times, inter)        
     
     def test_initialization(self):
+        """It returns an instance upon initialization."""
         self.assertTrue(isinstance(self.case, R.References))
     
     def test_make_series(self):
+        """It builds a time-series when needed."""
         period = random.choice(range(5,12))
         series = self.case.make_series(period,0.0)
         
@@ -83,6 +92,7 @@ class ReferencesSpec(unittest.TestCase):
         self.assertEqual(series[0.0], 1.0)
 
     def test_ranks(self):
+        """It correctly rank-orders elements in a time-series."""
         series = [10.0*random.random() for i in range(20)]
         ranked = self.case.ranks(series)
         
@@ -91,6 +101,7 @@ class ReferencesSpec(unittest.TestCase):
             self.assertEqual(ranked.count(rank), 1)
     
     def test_series(self):
+        """It has a generator that iterates over period/phase combinations."""
         N = 0
         
         for ser in self.case.series():
