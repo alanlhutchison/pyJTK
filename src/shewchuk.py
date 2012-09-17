@@ -34,6 +34,7 @@ def two_sum(a,b):
         return (x,y)
 
 def expansion_sum(series):
+    """Expansion sum based on adaptive-precision sums."""
     if len(series) == 0:
         return (None, 0.0)
     elif len(series) == 1:
