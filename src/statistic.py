@@ -1,4 +1,4 @@
-3#!/usr/bin/epython
+#!/usr/bin/epython
 
 import sys
 import os.path
@@ -7,17 +7,23 @@ sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 import numpy as np
 
 class ScoreFactory:
+    """Encapsulates the logic needed to generate a Kendall's Tau
+    score from a pair of series."""
+    # TODO: ANDY, does this actually need to be a CLASS?
     
     def __init__(self):
+        """No initialization arguments required."""
         pass
     
     def score(self, data, ref):
+        """Determines concordant / discordant pairwise relationships."""
         q = self.tau_vector(data)
         r = self.tau_vector(ref)
         s = sum(q * r)
         return s
         
     def tau_vector(self, series):
+        """Internal comparison vector that gives pairwise relationships."""
         z = np.array(series)
         n = len(series)
         
@@ -27,7 +33,7 @@ class ScoreFactory:
         return signs[idxs]
     
     def _tril_indices(self, n):
-        """reindex to retrieve values column-wise down"""
+        """Reindex to retrieve values column-wise down. For legibility."""
         xs,ys = np.tril_indices(n,k=-1)
         
         ps = zip(xs,ys)
