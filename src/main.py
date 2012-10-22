@@ -8,7 +8,7 @@ import numpy as np
 
 import utility as u
 import normal as t
-import statistic as s
+import statistic
 import references as r
 
 class JTKCYCLE:
@@ -29,29 +29,22 @@ class JTKCYCLE:
         self.interval = interval
         
         # score factory, distribution, and reference series generator
-        self.scorer = s.ScoreFactory()
         self.distribution = t.NormalDistribution(times)
         self.references = r.References(periods, times, interval)
     
     def _run(self, series, refp):
         per,off,ser = refp
         
-        s_score = self.scorer.score(series, ser)
+        s_score = statistic.k_score(series, ser)
         p_score = self.distribution.p_value(s_score)
         
         amp = self.est_amp(ser, per, off, s_score)
         
-        return (per, off, amp, p_score)
+        return (per, off, amp, s_score, p_score)
     
     def run_series(self, series):
         """Input series is run through JTK-CYCLE."""
-        if len(series) != self.timepoints:
-            raise Exception("poorly formatted series.")
-        
-        results = np.array(
-            [self._run(series,ref) for ref in self.references.series()],
-            dtype='float'
-            )
+        results = [self._run(series,ref) for ref in self.references.series()]
         results = self.do_bonferroni(results)
         best = self.find_best(results)
         
@@ -60,17 +53,19 @@ class JTKCYCLE:
     def find_best(self, results):
         """From a series of results vs. reference library,
         extracts characterization of best fitting reference."""
-        scores = [r[3] for r in results]
+        p_vals = [r[4] for r in results]
         
-        min_score = min(scores)
-        results = filter(lambda r: r[3] == min_score, results)
+        min_p = min(p_vals)
+        fresults = filter(lambda r: r[4] == min_p, results)
         
-        per = np.average([r[0] for r in results])
-        lag = np.average([r[1] for r in results])
-        amp = max(0.0, np.average([r[2] for r in results]))
-        tau = abs(min_score) / self.distribution.max_score
+        per = np.average([r[0] for r in fresults])
+        lag = np.average([r[1] for r in fresults])
+        amp = max(0.0, np.average([r[2] for r in fresults]))
         
-        return (per, lag, amp, tau)
+        scores = [r[3] for r in fresults]
+        tau = abs(np.average(scores)) / self.distribution.max_score
+        
+        return (min_p, per, lag, amp, tau)
     
     def est_amp(self, series, period, offset, S):
         """Estimates amplitude based on best fit reference series."""
@@ -92,14 +87,14 @@ class JTKCYCLE:
     
     def do_bonferroni(self, uncorrected):
         """Applies bonferroni correction to a series of results."""
-        scores = self._bonferroni([u[3] for u in uncorrected])
-        corrected = [(u[0],u[1],u[2],s) for u,s in zip(uncorrected,scores)]
+        scores = self._bonferroni([u[4] for u in uncorrected])
+        corrected = [(u[0],u[1],u[2],u[3],s) for u,s in zip(uncorrected,scores)]
         return corrected
     
     def _bonferroni(self, scores):
         """Arithmetic helper function for bonferroni correction."""
         scores = np.array(scores, dtype='float')
-        scores = scores / len(scores)
+        scores = scores * len(scores)
         return scores
 
 if __name__ == "__main__":

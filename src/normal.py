@@ -25,8 +25,9 @@ class NormalDistribution:
         nn = sum(times)
         ns = times
         
-        var = (nn**2 * (2*nn + 3) - sum(ns**2 * (2*ns + 3))) / 72.0
-        sdv = sqrt(var)
+        var = (nn**2 * (2*nn + 3) - np.sum(ns**2 * (2*ns + 3))) / 72.0
+        sdv = np.sqrt(var)
+        
         return sdv
     
     def p_value(self, S):
@@ -35,7 +36,7 @@ class NormalDistribution:
             return 1.0
         
         M = self.max_score
-        score = (abs(S) + M) / 2.0
+        score = (np.absolute(S) + M) / 2.0
         
         a = -1.0 * (score - 0.5)
         b = -1.0 * self.expected

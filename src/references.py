@@ -10,14 +10,16 @@ class References:
     """Class that provides a series of reference time series
     for a given JTKCYCLE run. Builds time series over periods / phases."""
     
-    def __init__(self, periods, times, interval=1):
+    def __init__(self, periods, times, interval=1, timerange=None):
         """Init w/: search periods, timereps array, and opt. interval."""
         self.periods = periods
         self.interval = interval
         self.times = times
         
         n = len(times)
-        self.timerange = np.array(range(n),dtype='float')
+        self.timerange = timerange
+        if self.timerange == None:
+            self.timerange = np.array(range(n),dtype='float')
         
     def _expand(self, values, tlim=None):
         """Provides replication of time-series based on timereps array."""

@@ -78,7 +78,7 @@ class RunSeriesSpec(unittest.TestCase):
             off = random.choice(range(per))
             
             ser = self._generate_series(per,off)
-            cper,coff,camp,ctau = self.case.run_series(ser)
+            pv,cper,coff,camp,ctau = self.case.run_series(ser)
             
             self.assertEqual(per,cper)
             self.assertEqual(off,coff)
@@ -95,7 +95,7 @@ class BonferroniSpec(unittest.TestCase):
         n = random.randint(10,50)
         ser = [10 * random.random() for i in range(n)]
         
-        expect = np.array([s/float(n) for s in ser],dtype='float')
+        expect = np.array([s*float(n) for s in ser],dtype='float')
         actual = self.case._bonferroni(ser)
         
         for p in zip(expect,actual):
