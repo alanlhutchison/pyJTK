@@ -47,8 +47,57 @@ class DistributionSpec(unittest.TestCase):
         
         self.assertEqual(case.p_value(None), 1.0)
         
-        # TODO: ANDY! YOU NEED TO TEST THE RIGHT CASES HERE.
-        #       TAKE SOME TIME TO CHOOSE THE RIGHT TESTS.
+    def tearDown(self):
+        pass
+
+class SmallUnequalSpec(unittest.TestCase):
+    """Generated test from R-script, compares expected p-values."""
+    
+    def setUp(self):
+        self.case = nd.NormalDistribution(
+            u.make_times(4, [2,3,5,4])
+            )
+    
+    def test_initialization(self):
+        """It should provide the correct parameters for the distribution."""
+        self.assertEqual(round(self.case.stdev, 2), 8.71)
+        self.assertEqual(round(self.case.max_score), 71.)
+        self.assertEqual(round(self.case.expected, 1), 35.5)
+    
+    def test_p_values(self):
+        """It should compute appropriate p-values given a set of scores."""
+        # 6.055271e-01 1.045762e+00 6.461744e-01 1.684351e-01 2.013015e-17
+        self.assertEqual(round(self.case.p_value(-10),2), 0.61)
+        self.assertEqual(round(self.case.p_value(0),2), 1.0)
+        self.assertEqual(round(self.case.p_value(9),2), 0.65)
+        self.assertEqual(round(self.case.p_value(25),2), 0.17)
+        self.assertEqual(round(self.case.p_value(149),2), 0.00)
+    
+    def tearDown(self):
+        pass
+
+class LargeUnequalSpec(unittest.TestCase):
+    """Generated test from R-script, compares expected p-values."""
+    
+    def setUp(self):
+        self.case = nd.NormalDistribution(
+            u.make_times(12, [8,2,8,2,8,2,6,2,7,2,8,2])
+            )
+    
+    def test_initialization(self):
+        """It should provide the correct parameters for the distribution."""
+        self.assertEqual(round(self.case.stdev), 72.)
+        self.assertEqual(round(self.case.max_score), 1442.)
+        self.assertEqual(round(self.case.expected), 721.)
+    
+    def test_p_values(self):
+        """It should compute appropriate p-values given a set of scores."""
+        # 4.920460e-01 1.005537e+00 4.964295e-01 8.397821e-02 4.294873e-25
+        self.assertEqual(round(self.case.p_value(-100),2), 0.49)
+        self.assertEqual(round(self.case.p_value(0),2), 1.0)
+        self.assertEqual(round(self.case.p_value(99),2), 0.50)
+        self.assertEqual(round(self.case.p_value(250),2), 0.08)
+        self.assertEqual(round(self.case.p_value(1492),2), 0.00)
     
     def tearDown(self):
         pass
