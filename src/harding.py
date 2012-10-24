@@ -5,7 +5,6 @@ import os.path
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 
 import numpy as np
-import shewchuk as sc
 
 class HardingDistribution:
     """Class representing an exact statistic distribution for Kendall's
@@ -59,10 +58,12 @@ class HardingDistribution:
             
             if n < mode:
                 p = min(m + n, mode)
+                
                 if p > n+1:
                     ts = range(n+1, p+1)
                 else:
                     ts = range(n+1, p-1, -1)
+                
                 for t in ts:
                     for u in range(mode, t-1, -1):
                         cf[u] = cf[u] - cf[u-t]

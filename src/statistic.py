@@ -25,18 +25,7 @@ def _tau_vector(series):
     
 def _tril_indices(n):
     """Trivial retrieval of indices."""
-    xs,ys = np.tril_indices(n,k=-1)
-    
-    #
-    # N.B. Previously reindexed to retrieve values column-wise down.
-    #
-    # ps = zip(xs,ys)
-    # ps.sort(key=lambda p:p[1])
-    #
-    # xs = np.array([p[0] for p in ps])
-    # ys = np.array([p[1] for p in ps])
-    #
-    
+    xs,ys = np.tril_indices(n,k=-1)    
     return (xs,ys)
     
 if __name__ == "__main__":
