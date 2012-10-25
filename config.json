@@ -1,38 +1,6 @@
-/*
-//
-// In case default parser behaviour is not satisfactory, the
-// -c option flag allows JTKCYCLE parameters to be read from
-// a JSON configuration file.
-//
-//
-// Config files define a single JSON dictionary (object) defines
-// any of the following string-valued hashkeys:
-//
-//
-// "n_times"   : number N of unique times sampled
-//
-// "reps"      : array of replications for each time point
-//             : (or a numerical N for even replication)
-//
-// "interval"  : time (hrs.) between timepoints
-//
-// "timerange" : optionally, specifies particular timepoints
-//             : for unevenly spaced time series (at ZT's)
-//
-//
-// Omitted and null-valued attributes will be read from microarray
-// data file header, so needs only specify those parameters for
-// which the default header parsing is unsatisfactory.
-//
-//
-// Included below is the configuration for Keegan et al dataset.
-// N.B. default parser suffices to generate these settings.
-//
-*/
-
-{   
+{
     "n_times": 12,
     "reps": [8, 2, 8, 2, 8, 2, 6, 2, 7, 2, 8, 2],
-    "interval": 2,
+    "interval": 1,
     "timerange": [0, 1, 4, 5, 8, 9, 12, 13, 16, 17, 20, 21]
 }
