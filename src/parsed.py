@@ -12,7 +12,7 @@ class DataParser:
     """A parser class for reading microarray data and generating
        relevant specification."""
     
-    def __init__(self, f):
+    def __init__(self, f, should_repattern=False):
         self.file = f
         header = f.readline()
         times = self.parse_header(header)
@@ -24,6 +24,7 @@ class DataParser:
         self.timerange = self.get_timerange(times)
         
         # This enables correct concatenation.
+        self.should_repattern = should_repattern
         self.pattern = self.build_pattern(times)
     
     def parse_header(self, header):
@@ -92,9 +93,9 @@ class DataParser:
             words = string.split(line)
             
             name = words[0]
-            values = self.repattern(
-                map(self.floatify, words[1:])
-                )
+            values = map(self.floatify, words[1:])
+            if self.should_repattern:
+                values = self.repattern(values)
             yield (name, values)
     
     def floatify(self, astring):

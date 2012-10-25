@@ -26,7 +26,7 @@ def main(args): # argument namespace
     foutput = args.ofile
     fconfig = args.cfile
     
-    parser = DataParser(finput)
+    parser = DataParser(finput, args.repattern)
     
     max_period = (args.max or 26/int(parser.interval)) + 1
     min_period = args.min or 20/int(parser.interval)
@@ -45,7 +45,7 @@ def main(args): # argument namespace
         
     test = JTKCycleRun(n_times, reps, periods,
                        interval, timerange, normal)
-
+    
     foutput.write("probeset"+"\t"
                   +"p-value"+"\t"
                   +"period"+"\t"
@@ -58,7 +58,7 @@ def main(args): # argument namespace
                       +str(period)+"\t"
                       +str(offset)+"\t"
                       +str(k_score)+"\n")
-        
+    
     # These are not currently used...
     p = args.pvalue
     summarize = args.summarize
@@ -92,7 +92,7 @@ def __create_parser__():
                    type=float,
                    default=0.01,
                    help="set p-value to define significance (dflt: 0.01)")
-    
+
     analysis = p.add_argument_group(title="JTK_CYCLE analysis options")
     analysis.add_argument("--min",
                           metavar="N",
@@ -106,6 +106,12 @@ def __create_parser__():
                           metavar="N",
                           type=int,
                           help="determines range step in # intervals (dflt: 1)")
+    
+    parser = p.add_argument_group(title="parser option")
+    parser.add_argument("-r", "--repattern",
+                        action='store_true',
+                        default=False,
+                        help="use header line to re-order data series by ZT")
     
     files = p.add_argument_group(title="files & I/O management options")
     files.add_argument("-i", "--input",
@@ -125,7 +131,7 @@ def __create_parser__():
                        metavar="FILENM",
                        type=argparse.FileType('r'),
                        help="read configuration from JSON, not from data header")
-    
+
     printer = p.add_argument_group(title="result output preferences")
     printer.add_argument("-s", "--summarize",
                          action='store_true',

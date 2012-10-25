@@ -93,7 +93,7 @@ class PatterningSpec(unittest.TestCase):
     
     def setUp(self):
         f = open(r + "/header.mock", "r")
-        self.case = p.DataParser(f)
+        self.case = p.DataParser(f, True)
     
     def test_pattern(self):
         """It should correctly assign indices to the corresponding times."""
