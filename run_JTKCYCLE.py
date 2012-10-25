@@ -2,97 +2,144 @@
 
 import os.path
 import sys
-sys.path.append(
-    os.path.join(
-        os.path.dirname(os.path.realpath(__file__)),
-        'src'
-        )
-    )
+
+FPATH = os.path.dirname(os.path.realpath(__file__)),[0]
+sys.path.append(FPATH[0]+'/src')
+
+import json
 import argparse
+import unittest
+import string
 
-def main(args):
-    pass
+from main import JTKCycleRun
+from parsed import DataParser
 
-def _create_parser():
+def main(args): # argument namespace
+    if args.test:
+        tests = unittest.defaultTestLoader.discover(FPATH[0]+"/spec",
+                                                    pattern="*spec.py")
+        test_runner = unittest.TextTestRunner(verbosity=1)
+        test_runner.run(tests)
+        return
+    
+    finput = args.ifile
+    foutput = args.ofile
+    fconfig = args.cfile
+    
+    parser = DataParser(finput)
+    
+    max_period = (args.max or 26/int(parser.interval)) + 1
+    min_period = args.min or 20/int(parser.interval)
+    step = args.step or 1
+        
+    config = {}
+    if fconfig != None:
+        config = json.load(fconfig)
+        
+    n_times   = __get_value__("n_times",   config) or parser.n_times
+    reps      = __get_value__("reps",      config) or parser.reps
+    interval  = __get_value__("interval",  config) or parser.interval
+    timerange = __get_value__("timerange", config) or parser.timerange
+    periods   = range(min_period, max_period, step)
+    normal    = False
+        
+    test = JTKCycleRun(n_times, reps, periods,
+                       interval, timerange, normal)
+
+    foutput.write("probeset"+"\t"
+                  +"p-value"+"\t"
+                  +"period"+"\t"
+                  +"lag"+"\t"
+                  +"tau"+"\n")
+    for name,series in parser.generate_series():
+        period, offset, k_score, p_value = test.run(series)
+        foutput.write(name+"\t"
+                      +str(p_value)+"\t"
+                      +str(period)+"\t"
+                      +str(offset)+"\t"
+                      +str(k_score)+"\n")
+        
+    # These are not currently used...
+    p = args.pvalue
+    summarize = args.summarize
+    ndebug = args.ndebug
+    
+    finput.close()
+    foutput.close()
+    if fconfig != None:
+        fconfig.close()
+    
+    return
+
+def __get_value__(k,d):
+    try:
+        return d[k]
+    except:
+        return None
+
+def __create_parser__():
     p = argparse.ArgumentParser(
-        description="Python script runner for JTK_CYCLE statistical test.",
+        description="python script runner for JTK_CYCLE statistical test",
         epilog="..."
         )
 
-    p.add_argument("dfile",
-                   metavar="DATA_FILE",
-                   default="-",
-                   type=argparse.FileType('r'),
-                   help="File from which to read data to run.")
     p.add_argument("-t", "--test",
                    action='store_true',
                    default=False,
-                   help="Run the Python unittest testing suite.")
+                   help="run the Python unittest testing suite")
+    p.add_argument("-p", "--pvalue",
+                   metavar="P",
+                   type=float,
+                   default=0.01,
+                   help="set p-value to define significance (dflt: 0.01)")
     
     analysis = p.add_argument_group(title="JTK_CYCLE analysis options")
-    analysis.add_argument("--averaged",
-                          action='store_true',
-                          default=False,
-                          help="Use averages to collapse replicate points.")
     analysis.add_argument("--min",
                           metavar="N",
                           type=int,
-                          help="Set min period to N of intervals.")
+                          help="set min period to N of intervals (dflt: 20/t)")
     analysis.add_argument("--max",
                           metavar="N",
                           type=int,
-                          help="Set max period to N of intervals.")
-    
-    bins = p.add_argument_group(title="low-pass frequency filters")
-    bbins = bins.add_mutually_exclusive_group()
-    bbins.add_argument("--gauss",
-                       type=int,
-                       metavar="STDEV",
-                       help="Gaussian averages with standard deviation STDEV.")
-    bbins.add_argument("--tricubic",
-                       type=int,
-                       metavar="WIDTH",
-                       help="Tricubic averages with kernel width: 2*WIDTH.")
-    bbins.add_argument("--step",
-                       type=int,
-                       metavar="SIZE",
-                       help="Step-function moving average with width: SIZE.")
+                          help="set max period to N of intervals (dflt: 26/t)")
+    analysis.add_argument("--step",
+                          metavar="N",
+                          type=int,
+                          help="determines range step in # intervals (dflt: 1)")
     
     files = p.add_argument_group(title="files & I/O management options")
-    files.add_argument("-a", "--annotations",
-                       dest="afile",
-                       metavar="FILE",
+    files.add_argument("-i", "--input",
+                       dest="ifile",
+                       metavar="FILENM",
+                       default="-",
                        type=argparse.FileType('r'),
-                       help="Read annotations from file, not from data rows.")
+                       help="file from which to read data to run (dflt: stdin)")
     files.add_argument("-o", "--output",
                        dest="ofile",
-                       metavar="FILE",
+                       metavar="FILENM",
                        type=argparse.FileType('w'),
                        default="-",
-                       help="Select a file to write results. Default: stdout.")
+                       help="file to write results (dflt: stdout)")
+    files.add_argument("-c", "--configuration",
+                       dest="cfile",
+                       metavar="FILENM",
+                       type=argparse.FileType('r'),
+                       help="read configuration from JSON, not from data header")
     
     printer = p.add_argument_group(title="result output preferences")
     printer.add_argument("-s", "--summarize",
                          action='store_true',
                          default=False,
-                         help="Print a test summary after all cycles finish.")
-    printer.add_argument("-u", "--unsorted",
-                         action='store_true',
-                         default=False,
-                         help="Do not sort rows by P-values, print unsorted.")
-    printer.add_argument("-m", "--multiplex",
-                         action='store_true',
-                         default=False,
-                         help="Prints statistics for all considered periods.")
+                         help="print a test summary after all cycles finish")
     printer.add_argument("-n",
-                         dest="nlines",
+                         dest="ndebug",
                          metavar="N",
                          action='store',
-                         help="Only write output for the first N count rows.")
+                         help="wouldn't you love to know...")
     
     return p
 
 if __name__ == "__main__":
-    parser = _create_parser()
+    parser = __create_parser__()
     args = parser.parse_args()
     main(args)

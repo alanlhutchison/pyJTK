@@ -36,8 +36,12 @@ class JTKCycle:
     
     def __run__(self, tseries, reference):
         """Tests a single series against a child reference."""
-        rseries = self.__expand__(reference.series)
-        return statistic.k_score(tseries, rseries)
+        if reference.tau_vector == None:
+            reference.tau_vector = statistic._tau_vector(
+                self.__expand__(reference.series)
+                )
+        r_tau_vector = reference.tau_vector
+        return statistic.fast_k_score(tseries, r_tau_vector)
     
     def run(self, series):
         """Populates the results dictionary. Returns the best-result."""

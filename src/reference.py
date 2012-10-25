@@ -27,6 +27,7 @@ class Reference:
         # Public data handles.
         self.series = self.__rank__(self.__values__)
         self.signs = np.sign(self.__values__)
+        self.tau_vector = None
         
     def __build_values__(self, period, offset):
         """Evaluates the function f at argued xs."""

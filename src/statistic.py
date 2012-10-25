@@ -12,7 +12,14 @@ def k_score(data, ref):
     r = _tau_vector(ref)
     s = np.sum(q * r)
     return s
-        
+
+def fast_k_score(data, ref_tau):
+    """Uses a memoized version of the tau vector."""
+    q = _tau_vector(data)
+    r = ref_tau
+    s = np.sum(q * r)
+    return s
+
 def _tau_vector(series):
     """Internal comparison vector that gives pairwise relationships."""
     z = np.array(series, dtype='float')

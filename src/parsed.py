@@ -99,8 +99,8 @@ class DataParser:
     
     def floatify(self, astring):
         try:
-            return float(string)
-        except ValueError:
+            return float(astring)
+        except:
             return None
     
 if __name__ == "__main__":
