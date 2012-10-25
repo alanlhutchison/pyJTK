@@ -21,7 +21,7 @@ class JTKCycle:
         n = len(time_reps)
         self.timerange = timerange
         if self.timerange == None:
-            self.timerange = interval * np.arange(n,dtype='float')
+            self.timerange = np.arange(n,dtype='float')
         
         # initialize empty memoization caches
         self.references = {}
@@ -42,12 +42,13 @@ class JTKCycle:
     def run(self, series):
         """Populates the results dictionary. Returns the best-result."""
         self.results = {} # clear previous run.
+        self.best = None
         
         for reference in self.generate_references():
             k_score = self.__run__(series, reference)
             offset = reference.offset
             
-            if self.best == None or k_score > self.best[1]:
+            if self.best == None or abs(k_score) >= abs(self.best[1]):
                 self.best = (offset, k_score)
             self.results[offset] = k_score
         

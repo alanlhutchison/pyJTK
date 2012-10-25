@@ -36,7 +36,7 @@ class RunSeriesSpec(unittest.TestCase):
     """Describe the JTK Cycle Behaviour."""
     
     def setUp(self):
-        self.case = JTKCycleRun(TEST_N,1,range(6,26,2),2.0)
+        self.case = JTKCycleRun(TEST_N,1,[4,6,8,10,12],2.0)
     
     def _generate_series(self, period):
         pihat = round(np.pi,4)
@@ -48,7 +48,7 @@ class RunSeriesSpec(unittest.TestCase):
     
     def test_run(self):
         """It should correctly estimate best periods of signal."""
-        period = random.choice(range(6,26,2))
+        period = random.choice([8,12,16,20,24])
         series = self._generate_series(period)
         cperiod, coffset, k_score, p_value = self.case.run(series)
         self.assertEqual(period,cperiod)
@@ -64,7 +64,7 @@ class BonferroniSpec(unittest.TestCase):
     
     def test_bonferroni(self):
         """It should apply a Bonferroni correction."""
-        score = random.random()
+        score = random.random() / self.factor
         expect = score * self.factor
         actual = self.case.bonferroni_adjust(score)
         self.assertEqual(expect, actual)

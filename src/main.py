@@ -20,7 +20,7 @@ class JTKCycleRun:
     def __init__(self, n_times, reps, periods,
                  interval=1, timerange=None, normal=False):
         """Init w/: timepoint count, repetition spec, and search periods.
-           Opt. interval specifies time-unit distance between timepoints.
+           Opt. interval specifies time-value intervalse between timepoints.
            Opt. timerange specifies unevenly spaced time intervals."""
         time_reps = u.make_times(n_times, reps)
         self.time_reps = time_reps
@@ -39,9 +39,39 @@ class JTKCycleRun:
         self.results = {}
         self.best = None
     
+    def __find_best__(self, cycle, best_p):
+        results = self.__find_matches__(cycle, best_p)
+        
+        period = self.interval * np.average([r[0] for r in results])
+        offset = self.interval * np.average([r[1] for r in results])
+        k_score = np.amin([r[2] for r in results])
+        p_value = np.amax([r[3] for r in results])
+        
+        return (period, offset, k_score, p_value)
+    
+    def __find_matches__(self, cycle, best_p):
+        """Searches child trees for equivalently high-scoring values."""
+        p = lambda k: self.bonferroni_adjust(self.distribution.p_value(k))
+        
+        results = []
+        for offset in cycle.results.keys():
+            k_score = cycle.results[offset]
+            p_value = p(k_score)
+                
+            if p_value == best_p:
+                per,off = float(cycle.period),float(offset)
+                s = np.sign(k_score) or 1
+                lag = (per + (1-s)*per/4 - off/2) % per
+                results.append(
+                    (cycle.period, lag, k_score, p_value)
+                    )
+        return results
+    
     def run(self, series):
         """Input series is run through JTK-CYCLE."""
         self.results = {} # clear previous run.
+        self.best = None
+        best_cycle, best_p = None, 1.0
         
         for cycle in self.generate_jtk_cycles():
             period = cycle.period
@@ -50,10 +80,13 @@ class JTKCycleRun:
                 self.distribution.p_value(k_score)
                 )
             
-            if self.best == None or p_value < self.best[3]:
-                self.best = (period, offset, k_score, p_value)
+            if best_cycle == None or p_value <= best_p:
+                best_p = p_value
+                best_cycle = cycle
+            
             self.results[period] = (offset, k_score, p_value)
         
+        self.best = self.__find_best__(best_cycle, best_p)
         return self.best
     
     def generate_jtk_cycles(self):
@@ -75,7 +108,7 @@ class JTKCycleRun:
     def bonferroni_adjust(self, p_value):
         """Applies test-specific bonferroni correction to a p-value."""
         n = np.sum(self.periods)
-        return n * p_value
+        return min(1.0, n * p_value)
     
 if __name__ == "__main__":
     print "Defines the main running class for jtk cycle statistical test."
