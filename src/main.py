@@ -74,9 +74,10 @@ class JTKCycleRun:
         self.best = None
         best_cycles, best_p = [], 1.0
         
+        q = statistic._tau_vector(series)
         for cycle in self.generate_jtk_cycles():
             period = cycle.period
-            offset, k_score = cycle.run(series)
+            offset, k_score = cycle.run(q)
             p_value = self.bonferroni_adjust(
                 self.distribution.p_value(k_score)
                 )

@@ -27,7 +27,7 @@ def _tau_vector(series):
     
     idxs = _tril_indices(n)
     signs = np.sign(np.subtract.outer(z,z))
-        
+    
     return signs[idxs]
     
 def _tril_indices(n):

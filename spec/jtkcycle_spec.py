@@ -10,6 +10,7 @@ del p, q # keep globals clean
 
 import unittest
 from jtkcycle import JTKCycle
+import statistic
 import random
 import numpy as np
 
@@ -51,7 +52,9 @@ class JTKCycleSpec(unittest.TestCase):
     def test_run(self):
         """Top-level call iterates sequence through reference cycle."""
         series = np.zeros(24, dtype='float')
-        (offset, k_score) = self.case.run(series)
+        q = statistic._tau_vector(series)
+        
+        (offset, k_score) = self.case.run(q)
         self.assertEqual(len(self.case.results), 24)
     
     def test_expansion(self):

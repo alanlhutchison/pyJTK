@@ -34,22 +34,24 @@ class JTKCycle:
         comps = tuple([value * np.ones(times) for value,times in pairs])
         return np.concatenate(comps)
     
-    def __run__(self, tseries, reference):
+    def __run__(self, q, reference):
         """Tests a single series against a child reference."""
         if reference.tau_vector == None:
             reference.tau_vector = statistic._tau_vector(
                 self.__expand__(reference.series)
                 )
-        r_tau_vector = reference.tau_vector
-        return statistic.fast_k_score(tseries, r_tau_vector)
+        r = reference.tau_vector
+        
+        k_score = np.sum(q * r)
+        return k_score
     
-    def run(self, series):
+    def run(self, q):
         """Populates the results dictionary. Returns the best-result."""
         self.results = {} # clear previous run.
         self.best = None
         
         for reference in self.generate_references():
-            k_score = self.__run__(series, reference)
+            k_score = self.__run__(q, reference)
             offset = reference.offset
             
             if self.best == None or abs(k_score) >= abs(self.best[1]):
