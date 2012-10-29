@@ -25,10 +25,10 @@ def _tau_vector(series):
     z = np.array(series, dtype='float')
     n = len(series)
     
-    idxs = _tril_indices(n)
-    signs = np.sign(np.subtract.outer(z,z))
+    xs,ys = _tril_indices(n)
+    signs = np.sign(z[xs] - z[ys])
     
-    return signs[idxs]
+    return signs
     
 def _tril_indices(n):
     """Trivial retrieval of indices."""
