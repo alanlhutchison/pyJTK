@@ -35,10 +35,10 @@ class DataParser:
         return times
     
     def get_ZT_time(self, astring):
-        m = re.search(r"ZT[\d]{1,2}$", astring)
+        m = re.search(r"ZT[\d.]+$", astring)
         if not m:
             return None
-        return int(m.group()[2:])
+        return float(m.group()[2:])
     
     def count_times(self, times):
         return len(set(times))

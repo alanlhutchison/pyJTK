@@ -72,6 +72,7 @@ class UtilitiesSpec(unittest.TestCase):
         """It should correctly find the ZT times or return None."""
         self.assertEqual(self.case.get_ZT_time("GiulianiZT16"), 16)
         self.assertEqual(self.case.get_ZT_time("NA"), None)
+        self.assertEqual(self.case.get_ZT_time("FroyoZT4.5"), 4.5)
     
     def test_uniques(self):
         """It should correctly identify the unique elements of iterable."""
