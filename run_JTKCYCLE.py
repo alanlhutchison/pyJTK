@@ -32,7 +32,12 @@ def main(args): # argument namespace
     max_period = (args.max or 26/int(parser.interval)) + 1
     min_period = args.min or 20/int(parser.interval)
     step = args.step or 1
-        
+    
+    try:
+        periods = json.loads(args.periods)
+    except:
+        periods = range(min_period, max_period, step)
+    
     config = {}
     if fconfig != None:
         config = json.load(fconfig)
@@ -41,7 +46,7 @@ def main(args): # argument namespace
     reps      = __get_value__("reps",      config) or parser.reps
     interval  = __get_value__("interval",  config) or parser.interval
     timerange = __get_value__("timerange", config) or parser.timerange
-    periods   = range(min_period, max_period, step)
+    periods   = __get_value__("periods",   config) or periods
     normal    = args.normal
     
     test = JTKCycleRun(n_times, reps, periods,
@@ -135,20 +140,26 @@ def __create_parser__():
                           action='store_true',
                           default=False,
                           help="use normal approximation to null distribution")
-
-    search = p.add_argument_group(title="JTK_CYCLE search options")
-    search.add_argument("--min",
-                        metavar="N",
-                        type=int,
-                        help="set min period to N of intervals (dflt: 20/t)")
-    search.add_argument("--max",
-                        metavar="N",
-                        type=int,
-                        help="set max period to N of intervals (dflt: 26/t)")
-    search.add_argument("--step",
-                        metavar="N",
-                        type=int,
-                        help="determines range step in # intervals (dflt: 1)")
+    
+    periods = p.add_argument_group(title="JTK_CYCLE custom search periods")
+    periods.add_argument("--periods",
+                         metavar="$JSON_ARR",
+                         type=str,
+                         action='store',
+                         help="JSON array specifying periods, i.e. [1,3,5,7], "
+                              "supercedes any range-bound specification.")
+    periods.add_argument("--min",
+                         metavar="N",
+                         type=int,
+                         help="set min period to N of intervals (dflt: 20/t)")
+    periods.add_argument("--max",
+                         metavar="N",
+                         type=int,
+                         help="set max period to N of intervals (dflt: 26/t)")
+    periods.add_argument("--step",
+                         metavar="N",
+                         type=int,
+                         help="determines range step in # intervals (dflt: 1)")
     
     parser = p.add_argument_group(title="parser option")
     parser.add_argument("-r", "--repattern",
