@@ -13,6 +13,8 @@ import random
 import unittest
 
 from main import JTKCycleRun
+from harding import HardingDistribution
+from normal import NormalDistribution
 
 TEST_N = 12
 
@@ -31,6 +33,19 @@ class JTKCycleRun_Spec(unittest.TestCase):
     
     def tearDown(self):
         pass
+
+class DistributionSelectionSepc(unittest.TestCase):
+    """Describe the Null Distribution boolean selector."""
+    
+    def test_gaussian_distribution(self):
+        case = JTKCycleRun(TEST_N, 1, None, 1.0, None, True)
+        self.assertTrue(isinstance(case.distribution, NormalDistribution))
+    
+    def test_exact_distribution(self):
+        case = JTKCycleRun(TEST_N, 1, None, 1.0, None, False)
+        self.assertTrue(isinstance(case.distribution, HardingDistribution))
+    
+    
 
 class RunSeriesSpec(unittest.TestCase):
     """Describe the JTK Cycle Behaviour."""

@@ -42,7 +42,7 @@ def main(args): # argument namespace
     interval  = __get_value__("interval",  config) or parser.interval
     timerange = __get_value__("timerange", config) or parser.timerange
     periods   = range(min_period, max_period, step)
-    normal    = False
+    normal    = args.normal
     
     test = JTKCycleRun(n_times, reps, periods,
                        interval, timerange, normal)
@@ -53,9 +53,8 @@ def main(args): # argument namespace
         _,_,_,_ = test.run(series)
         __write_data__(foutput, name, test, summarize)
     
-    # These are not currently used...
+    # Variables are not currently used...
     p = args.pvalue
-    ndebug = args.ndebug
     
     finput.close()
     foutput.close()
@@ -124,25 +123,32 @@ def __create_parser__():
                    action='store_true',
                    default=False,
                    help="run the Python unittest testing suite")
-    p.add_argument("-p", "--pvalue",
-                   metavar="P",
-                   type=float,
-                   default=0.01,
-                   help="set p-value to define significance (dflt: 0.01)")
 
     analysis = p.add_argument_group(title="JTK_CYCLE analysis options")
-    analysis.add_argument("--min",
-                          metavar="N",
-                          type=int,
-                          help="set min period to N of intervals (dflt: 20/t)")
-    analysis.add_argument("--max",
-                          metavar="N",
-                          type=int,
-                          help="set max period to N of intervals (dflt: 26/t)")
-    analysis.add_argument("--step",
-                          metavar="N",
-                          type=int,
-                          help="determines range step in # intervals (dflt: 1)")
+    analysis.add_argument("-p", "--pvalue",
+                          metavar="P",
+                          type=float,
+                          default=0.01,
+                          help="set p-value to define significance (dflt: 0.01)")
+    analysis.add_argument("-n", "--normal",
+                          dest="normal",
+                          action='store_true',
+                          default=False,
+                          help="use normal approximation to null distribution")
+
+    search = p.add_argument_group(title="JTK_CYCLE search options")
+    search.add_argument("--min",
+                        metavar="N",
+                        type=int,
+                        help="set min period to N of intervals (dflt: 20/t)")
+    search.add_argument("--max",
+                        metavar="N",
+                        type=int,
+                        help="set max period to N of intervals (dflt: 26/t)")
+    search.add_argument("--step",
+                        metavar="N",
+                        type=int,
+                        help="determines range step in # intervals (dflt: 1)")
     
     parser = p.add_argument_group(title="parser option")
     parser.add_argument("-r", "--repattern",
@@ -174,11 +180,6 @@ def __create_parser__():
                          action='store_true',
                          default=False,
                          help="print a test summary after all cycles finish")
-    printer.add_argument("-n",
-                         dest="ndebug",
-                         metavar="N",
-                         action='store',
-                         help="wouldn't you love to know...")
     
     return p
 
