@@ -5,7 +5,7 @@ import sys
 
 FPATH = os.path.dirname(os.path.realpath(__file__)),[0]
 sys.path.append(FPATH[0]+'/src')
-VERSION = "2.3"
+VERSION = "2.3.1"
 
 import json
 import unittest
@@ -43,26 +43,18 @@ def main(args): # argument namespace
     timerange = __get_value__("timerange", config) or parser.timerange
     periods   = range(min_period, max_period, step)
     normal    = False
-        
+    
     test = JTKCycleRun(n_times, reps, periods,
                        interval, timerange, normal)
     
-    foutput.write("probeset"+"\t"
-                  +"p-value"+"\t"
-                  +"period"+"\t"
-                  +"lag"+"\t"
-                  +"tau"+"\n")
+    summarize = args.summarize
+    __write_header__(foutput, periods, summarize)
     for name,series in parser.generate_series():
-        period, offset, k_score, p_value = test.run(series)
-        foutput.write(name+"\t"
-                      +str(p_value)+"\t"
-                      +str(period)+"\t"
-                      +str(offset)+"\t"
-                      +str(k_score)+"\n")
+        _,_,_,_ = test.run(series)
+        __write_data__(foutput, name, test, summarize)
     
     # These are not currently used...
     p = args.pvalue
-    summarize = args.summarize
     ndebug = args.ndebug
     
     finput.close()
@@ -71,6 +63,49 @@ def main(args): # argument namespace
         fconfig.close()
     
     return
+
+
+#
+# printer utilities
+#
+
+def __write_header__(foutput, periods, summarize=False):
+    if summarize:
+        foutput.write("probeset")
+        for period in sorted(periods):
+            foutput.write("\t" + str(period) + "-HR")
+        else:
+            foutput.write("\n")
+    else:
+        foutput.write("probeset"+"\t"
+                      +"p-value"+"\t"
+                      +"period"+"\t"
+                      +"lag"+"\t"
+                      +"tau"+"\n")
+    return
+
+def __write_data__(foutput, name, test, summarize=False):
+    if summarize:
+        foutput.write(name)
+        for period in sorted(test.results.keys()):
+            offset, k_score, p_value = test.results[period]
+            foutput.write("\t" + str(p_value))
+        else:
+            foutput.write("\n")
+    else:
+        period, offset, k_score, p_value = test.best
+        foutput.write(name+"\t"
+                      +str(p_value)+"\t"
+                      +str(period)+"\t"
+                      +str(offset)+"\t"
+                      +str(k_score)+"\n")
+    return
+
+
+
+#
+# runner script utilities
+#
 
 def __get_value__(k,d):
     try:
