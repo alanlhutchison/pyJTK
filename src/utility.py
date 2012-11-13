@@ -5,10 +5,11 @@ import os.path
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 
 import numpy as np
+from scipy.stats import scoreatpercentile
 
 def make_times(timepoints, reps=1):
     """Generates an appropriately formatted timereps array.
-    Times contains repeated indexes corresponding to replicates."""
+       Times contains repeated indexes corresponding to replicates."""
     
     try:
         if len(reps) == timepoints:
@@ -20,3 +21,10 @@ def make_times(timepoints, reps=1):
         times = reps * np.ones(timepoints, dtype='float')
     
     return times
+
+def est_amp(series):
+    """Uses interquartile range to estimate amplitude of a time series."""
+    qlo = scoreatpercentile(series, 25)
+    qhi = scoreatpercentile(series, 75)
+    iqr = qhi - qlo
+    return 3.5 * iqr

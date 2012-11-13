@@ -13,6 +13,33 @@ import numpy as np
 import utility as u
 import random
 
+class AmplitudeSpec(unittest.TestCase):
+    """Describe amplitude estimation utility."""
+    
+    def test_trivial(self):
+        """It should return 0 for a constant series."""
+        vals = np.ones(12)
+        expect = 0
+        actual = u.est_amp(vals)
+        self.assertEqual(expect, actual)
+    
+    def test_sinusoid(self):
+        """It should return approximately the correct amplitude of a sine."""
+        vals = np.sin(np.arange(100) / (10 * np.pi))
+        expect = 2.0
+        actual = u.est_amp(vals)
+        self.assertTrue(actual < 2 * expect)
+        self.assertTrue(actual > 0.5 * expect)
+    
+    def test_random(self):
+        """It should return approximately the correct amplitude for noise."""
+        vals = 10 * np.random.random(35)
+        expect = 10
+        actual = u.est_amp(vals)
+        self.assertTrue(actual < 2 * expect)
+        self.assertTrue(actual > 0.5 * expect)
+        
+
 class TimesSpec(unittest.TestCase):
     """Describe timereps array utility"""
     
