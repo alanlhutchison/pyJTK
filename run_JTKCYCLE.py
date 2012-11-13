@@ -29,28 +29,25 @@ def main(args): # argument namespace
     
     parser = DataParser(finput, args.repattern)
     
-    max_period = (args.max or 26/int(parser.interval)) + 1
-    min_period = args.min or 20/int(parser.interval)
-    step = args.step or 1
+    max_period = (args.max or 26) + 1
+    min_period = args.min or 20
+    period_step = args.period_step or 2
     
     try:
         periods = json.loads(args.periods)
     except:
-        periods = range(min_period, max_period, step)
+        periods = range(min_period, max_period, period_step)
     
     config = {}
     if fconfig != None:
         config = json.load(fconfig)
-        
-    n_times   = __get_value__("n_times",   config) or parser.n_times
-    reps      = __get_value__("reps",      config) or parser.reps
-    interval  = __get_value__("interval",  config) or parser.interval
-    timerange = __get_value__("timerange", config) or parser.timerange
-    periods   = __get_value__("periods",   config) or periods
-    normal    = args.normal
     
-    test = JTKCycleRun(n_times, reps, periods,
-                       interval, timerange, normal)
+    reps       = __get_value__("reps",       config) or parser.reps
+    timepoints = __get_value__("timepoints", config) or parser.timepoints
+    periods    = __get_value__("periods",    config) or periods
+    normal     = __get_value__("normal",     config) or args.normal
+    
+    test = JTKCycleRun(reps, timepoints, periods, normal)
     
     summarize = args.summarize
     __write_header__(foutput, periods, summarize)
@@ -60,6 +57,7 @@ def main(args): # argument namespace
     
     # Variables are not currently used...
     p = args.pvalue
+    offset_step = args.offset_step
     
     finput.close()
     foutput.close()
@@ -146,20 +144,24 @@ def __create_parser__():
                          metavar="$JSON_ARR",
                          type=str,
                          action='store',
-                         help="JSON array specifying periods, i.e. [1,3,5,7], "
-                              "supercedes any range-bound specification.")
+                         help="JSON array specifies periods i.e. [1,3,5,7]")
     periods.add_argument("--min",
                          metavar="N",
                          type=int,
-                         help="set min period to N of intervals (dflt: 20/t)")
+                         help="set min period to number N hours (dflt: 20)")
     periods.add_argument("--max",
                          metavar="N",
                          type=int,
-                         help="set max period to N of intervals (dflt: 26/t)")
-    periods.add_argument("--step",
+                         help="set max period to number N hours (dflt: 26)")
+    periods.add_argument("--period-step",
                          metavar="N",
                          type=int,
-                         help="determines range step in # intervals (dflt: 1)")
+                         help="determines range step N in hours (dflt: 2)")
+    periods.add_argument("--offset-step",
+                         metavar="N",
+                         type=float,
+                         action='store',
+                         help="offset step size N of half-hours (dflt: 2)")
     
     parser = p.add_argument_group(title="parser option")
     parser.add_argument("-r", "--repattern",
@@ -184,7 +186,7 @@ def __create_parser__():
                        dest="cfile",
                        metavar="FILENM",
                        type=argparse.FileType('r'),
-                       help="read configuration from JSON, not from data header")
+                       help="configure {reps, times, periods, normal} from JSON")
 
     printer = p.add_argument_group(title="result output preferences")
     printer.add_argument("-s", "--summarize",

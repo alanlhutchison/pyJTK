@@ -22,17 +22,11 @@ class AcceptanceSpec(unittest.TestCase):
         f = open(r + "/header.ldz", "r")
         self.case = p.DataParser(f)
     
-    def test_times(self):
-        self.assertEqual(self.case.n_times, 12)
-    
     def test_reps(self):
         self.assertEqual(self.case.reps, [8,2,8,2,8,2,6,2,7,2,8,2])
     
-    def test_interval(self):
-        self.assertEqual(self.case.interval, 1)
-    
-    def test_timerange(self):
-        self.assertEqual(self.case.timerange, [0,1,4,5,8,9,12,13,16,17,20,21])
+    def test_timepoints(self):
+        self.assertEqual(self.case.timepoints, [0,1,4,5,8,9,12,13,16,17,20,21])
         
     def tearDown(self):
         pass
@@ -46,17 +40,11 @@ class ArgumentsSpec(unittest.TestCase):
         f = open(r + "/header.mock", "r")
         self.case = p.DataParser(f)
     
-    def test_times(self):
-        self.assertEqual(self.case.n_times, 4)
-    
     def test_reps(self):
         self.assertEqual(self.case.reps, [2,2,3,3])
     
-    def test_interval(self):
-        self.assertEqual(self.case.interval, 2)
-    
-    def test_timerange(self):
-        self.assertEqual(self.case.timerange, None)
+    def test_timepoints(self):
+        self.assertEqual(self.case.timepoints, [0, 2, 4, 6])
     
     def tearDown(self):
         pass
@@ -78,13 +66,6 @@ class UtilitiesSpec(unittest.TestCase):
         """It should correctly identify the unique elements of iterable."""
         self.assertEqual(self.case.__uniques__("ABBA"), ["A", "B"])
         self.assertEqual(self.case.__uniques__([1,2,3,4,4,3,2,1]), [1,2,3,4])
-    
-    def test_intervals(self):
-        """It should correctly compute the intervals between elements."""
-        data = [2,3,5,7,11,13]
-        expect = [1,2,2,4,2]
-        actual = self.case.__intervals__(data).tolist()
-        self.assertEqual(expect, actual)
     
     def tearDown(self):
         pass

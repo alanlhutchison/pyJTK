@@ -12,25 +12,20 @@ class JTKCycle:
     """Class that executes a series of cached JTK tests vs. cached reference
        series in a JTKCYCLE run. Builds periodic time series over offsets."""
     
-    def __init__(self, period, time_reps, interval=1, timerange=None):
-        """Init w/: search periods, timereps array, and opt. interval."""
+    def __init__(self, period, reps, timepoints):
+        """Init w/: search period, repetitions, and timepoints."""
         self.period = period
-        self.interval = interval
-        self.time_reps = time_reps
-        
-        n = len(time_reps)
-        self.timerange = timerange
-        if self.timerange == None:
-            self.timerange = np.arange(n,dtype='float')
+        self.reps = reps
+        self.timepoints = np.array(timepoints,dtype='float')
         
         # initialize empty memoization caches
         self.references = {}
         self.results = {}
         self.best = None # (offset, k_score)
         
-    def __expand__(self, values, limit=None):
-        """Provides replication of time-series based on time-reps."""
-        pairs = zip(values[:limit], self.time_reps[:limit])
+    def __expand__(self, values):
+        """Provides replication of time-series based on repetitions array."""
+        pairs = zip(values, self.reps)
         comps = tuple([value * np.ones(times) for value,times in pairs])
         return np.concatenate(comps)
     
@@ -62,11 +57,11 @@ class JTKCycle:
     
     def generate_references(self):
         """Generates the entire reference library."""
-        for offset in range(self.period):
+        for offset in np.arange(0, self.period):
             try:
                 yield self.references[offset]
             except:
-                self.references[offset] = Reference(self.timerange,
+                self.references[offset] = Reference(self.timepoints,
                                                     self.period,
                                                     offset)
                 yield self.references[offset]

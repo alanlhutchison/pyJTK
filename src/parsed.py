@@ -18,10 +18,8 @@ class DataParser:
         times = self.parse_header(header)
         
         # These are arguments to JTKCycleRun initialization...
-        self.n_times   = self.count_times(times)
-        self.reps      = self.get_reps(times)
-        self.interval  = self.get_interval(times)
-        self.timerange = self.get_timerange(times)
+        self.reps       = self.get_reps(times)
+        self.timepoints = self.get_timepoints(times)
         
         # This enables correct concatenation.
         self.should_repattern = should_repattern
@@ -40,9 +38,6 @@ class DataParser:
             return None
         return float(m.group()[2:])
     
-    def count_times(self, times):
-        return len(set(times))
-    
     def get_reps(self, times):
         uniques = self.__uniques__(times)
         times = [times.count(u) for u in uniques]
@@ -56,24 +51,8 @@ class DataParser:
         uniques.sort()
         return uniques
     
-    def get_interval(self, times):
-        intervals = self.__intervals__(times)
-        if len(set(intervals)) == 1:
-            return intervals[0]
-        else:
-            return 1
-    
-    def __intervals__(self, times):
-        uniques = np.array(self.__uniques__(times), dtype='float')
-        intervals = uniques[1:] - uniques[:-1]
-        return intervals
-    
-    def get_timerange(self, times):
-        intervals = self.__intervals__(times)
-        if len(set(intervals)) == 1:
-            return None
-        else:
-            return self.__uniques__(times)
+    def get_timepoints(self, times):
+        return self.__uniques__(times)
     
     def build_pattern(self, times):
         uniques = self.__uniques__(times)

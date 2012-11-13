@@ -19,16 +19,15 @@ class JTKCycleSpec(unittest.TestCase):
        It is a parent cache for individual reference time series."""
     
     def setUp(self):
-        self.case = JTKCycle(24, 2*np.ones(12), 2, None)
+        self.case = JTKCycle(24, 2*np.ones(12), np.arange(0,24,2))
     
     def test_initialization(self):
         """It should appropriately initialize an instance."""
         self.assertTrue(isinstance(self.case, JTKCycle))
         self.assertEqual(self.case.period, 24)
-        self.assertEqual(self.case.interval, 2)
         
-        self.assertEqual(len(self.case.timerange), 12)
-        self.assertEqual(len(self.case.time_reps), 12)
+        self.assertEqual(len(self.case.timepoints), 12)
+        self.assertEqual(len(self.case.reps), 12)
         
         self.assertEqual(self.case.best, None)
         

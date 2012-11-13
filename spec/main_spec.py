@@ -22,14 +22,13 @@ class JTKCycleRun_Spec(unittest.TestCase):
     """Describe the JTK Cycle Runner class... """
     
     def setUp(self):
-        self.case = JTKCycleRun(TEST_N,1,None,1.0)
+        self.case = JTKCycleRun(np.ones(TEST_N),2*np.arange(TEST_N),None)
     
     def test_initialization(self):
         """It should initialize correctly, and memoize appropriate
            initialization parameters."""
         self.assertTrue(isinstance(self.case, JTKCycleRun))
         self.assertEqual(self.case.periods, None)
-        self.assertEqual(self.case.interval, 1.0)
     
     def tearDown(self):
         pass
@@ -38,11 +37,11 @@ class DistributionSelectionSepc(unittest.TestCase):
     """Describe the Null Distribution boolean selector."""
     
     def test_gaussian_distribution(self):
-        case = JTKCycleRun(TEST_N, 1, None, 1.0, None, True)
+        case = JTKCycleRun(np.ones(TEST_N), 2*np.arange(TEST_N), None, True)
         self.assertTrue(isinstance(case.distribution, NormalDistribution))
     
     def test_exact_distribution(self):
-        case = JTKCycleRun(TEST_N, 1, None, 1.0, None, False)
+        case = JTKCycleRun(np.ones(TEST_N), 2*np.arange(TEST_N), None, False)
         self.assertTrue(isinstance(case.distribution, HardingDistribution))
     
     
@@ -51,12 +50,15 @@ class RunSeriesSpec(unittest.TestCase):
     """Describe the JTK Cycle Behaviour."""
     
     def setUp(self):
-        self.case = JTKCycleRun(TEST_N,1,[4,6,8,10,12],2.0)
+        self.case = JTKCycleRun(np.ones(TEST_N),
+                                2 * np.arange(TEST_N),
+                                [8,12,16,20,24],
+                                2.0)
     
     def _generate_series(self, period):
         pihat = round(np.pi,4)
         factor = 2 * pihat / period
-        times = 2.0 * np.array(range(TEST_N))
+        times = 2 * np.arange(TEST_N)
         times = times * factor
         series = np.cos(times)
         return series
@@ -74,7 +76,7 @@ class RunSeriesSpec(unittest.TestCase):
 class BonferroniSpec(unittest.TestCase):
     def setUp(self):
         periods = [random.randint(1,10) for i in range(5)]
-        self.case = JTKCycleRun(12,1,periods)
+        self.case = JTKCycleRun(np.ones(TEST_N),2*np.arange(TEST_N),periods)
         self.factor = sum(periods)
     
     def test_bonferroni(self):

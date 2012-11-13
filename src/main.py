@@ -17,22 +17,17 @@ class JTKCycleRun:
        test. Generates a statistical distribution and collection of
        reference cycles."""
     
-    def __init__(self, n_times, reps, periods,
-                 interval=1, timerange=None, normal=False):
+    def __init__(self, reps, timepoints, periods, normal=False):
         """Init w/: timepoint count, repetition spec, and search periods.
-           Opt. interval specifies time-value intervalse between timepoints.
-           Opt. timerange specifies unevenly spaced time intervals."""
-        time_reps = u.make_times(n_times, reps)
-        self.time_reps = time_reps
-        self.timerange = timerange
-        
+           Opt. timepoints specifies unevenly spaced time intervals."""
+        self.reps = np.array(reps,dtype='float')
+        self.timepoints = np.array(timepoints,dtype='float')
         self.periods = periods
-        self.interval = interval
         
         if normal:
-            self.distribution = NormalDistribution(time_reps)
+            self.distribution = NormalDistribution(self.reps)
         else:
-            self.distribution = HardingDistribution(time_reps)
+            self.distribution = HardingDistribution(self.reps)
         
         # initialize empty lookup table for test cycles and results.
         self.cycles = {}
@@ -42,8 +37,8 @@ class JTKCycleRun:
     def __find_best__(self, cycles, best_p):
         results = self.__find_matches__(cycles, best_p)
         
-        period = self.interval * np.average([r[0] for r in results])
-        offset = self.interval * np.average([r[1] for r in results])
+        period = np.average([r[0] for r in results])
+        offset = np.average([r[1] for r in results])
         k_score = np.amin([r[2] for r in results])
         p_value = np.amax([r[3] for r in results])
         
@@ -106,9 +101,8 @@ class JTKCycleRun:
             except:
                 cycle = JTKCycle(
                     period,
-                    self.time_reps,
-                    self.interval,
-                    self.timerange
+                    self.reps,
+                    self.timepoints
                     )
                 self.cycles[period] = cycle
                 yield self.cycles[period]
