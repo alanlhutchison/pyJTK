@@ -67,7 +67,7 @@ class RunSeriesSpec(unittest.TestCase):
         """It should correctly estimate best periods of signal."""
         period = random.choice([8,12,16,20,24])
         series = self._generate_series(period)
-        cperiod, coffset, k_score, p_value = self.case.run(series)
+        camp, cperiod, coffset, k_score, p_value = self.case.run(series)
         self.assertEqual(period,cperiod)
     
     def tearDown(self):

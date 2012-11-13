@@ -34,15 +34,16 @@ class JTKCycleRun:
         self.results = {}
         self.best = None
     
-    def __find_best__(self, cycles, best_p):
+    def __find_best__(self, series, cycles, best_p):
         results = self.__find_matches__(cycles, best_p)
         
         period = np.average([r[0] for r in results])
         offset = np.average([r[1] for r in results])
         k_score = np.amin([r[2] for r in results])
         p_value = np.amax([r[3] for r in results])
+        est_amp = u.est_amp(series)
         
-        return (period, offset, k_score, p_value)
+        return (est_amp, period, offset, k_score, p_value)
     
     def __find_matches__(self, cycles, best_p):
         """Searches child trees for equivalently high-scoring values."""
@@ -89,7 +90,7 @@ class JTKCycleRun:
             if p_value == best_p:
                 best_cycles.append(cycle)
         
-        self.best = self.__find_best__(best_cycles, best_p)
+        self.best = self.__find_best__(series, best_cycles, best_p)
         return self.best
     
     def generate_jtk_cycles(self):
