@@ -5,7 +5,7 @@ import sys
 
 FPATH = os.path.dirname(os.path.realpath(__file__)),[0]
 sys.path.append(FPATH[0]+'/src')
-VERSION = "2.4"
+VERSION = "2.5"
 
 import json
 import unittest
@@ -73,13 +73,13 @@ def main(args): # argument namespace
 
 def __write_header__(foutput, periods, summary=False):
     if summary:
-        foutput.write("probeset")
+        foutput.write("#")
         for period in sorted(periods):
             foutput.write("\t" + str(period) + "-HR")
         else:
             foutput.write("\n")
     else:
-        foutput.write("probeset"+"\t"
+        foutput.write("#"+"\t"
                       +"p-value"+"\t"
                       +"amp"+"\t"
                       +"period"+"\t"
@@ -90,9 +90,10 @@ def __write_header__(foutput, periods, summary=False):
 def __write_data__(foutput, name, test, summary=False):
     if summary:
         foutput.write(name)
+        est_amp,_,_,_,_ = test.best
         for period in sorted(test.results.keys()):
             offset, k_score, p_value = test.results[period]
-            outstr = str(p_value)+";"+str(period)+";"+str(offset)+";"+str(k_score)
+            outstr = str(p_value)+";"+str(period)+";"+str(offset)+";"+str(est_amp)
             foutput.write("\t" + outstr)
         else:
             foutput.write("\n")
