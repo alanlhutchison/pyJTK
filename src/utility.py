@@ -27,4 +27,4 @@ def est_amp(series):
     qlo = scoreatpercentile(series, 25)
     qhi = scoreatpercentile(series, 75)
     iqr = qhi - qlo
-    return 3.5 * iqr
+    return 1.5 * iqr

@@ -25,7 +25,7 @@ class AmplitudeSpec(unittest.TestCase):
     
     def test_sinusoid(self):
         """It should return approximately the correct amplitude of a sine."""
-        vals = np.sin(np.arange(100) / (10 * np.pi))
+        vals = np.sin(np.arange(100) / (5 * np.pi))
         expect = 2.0
         actual = u.est_amp(vals)
         self.assertTrue(actual < 2 * expect)
