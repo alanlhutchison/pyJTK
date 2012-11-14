@@ -52,7 +52,7 @@ def main(args): # argument namespace
     summarize = args.summarize
     __write_header__(foutput, periods, summarize)
     for name,series in parser.generate_series():
-        _,_,_,_ = test.run(series)
+        _,_,_,_,_ = test.run(series)
         __write_data__(foutput, name, test, summarize)
     
     # Variables are not currently used...
@@ -81,6 +81,7 @@ def __write_header__(foutput, periods, summarize=False):
     else:
         foutput.write("probeset"+"\t"
                       +"p-value"+"\t"
+                      +"amp"+"\t"
                       +"period"+"\t"
                       +"lag"+"\t"
                       +"tau"+"\n")
@@ -95,9 +96,10 @@ def __write_data__(foutput, name, test, summarize=False):
         else:
             foutput.write("\n")
     else:
-        period, offset, k_score, p_value = test.best
+        est_amp, period, offset, k_score, p_value = test.best
         foutput.write(name+"\t"
                       +str(p_value)+"\t"
+                      +str(est_amp)+"\t"
                       +str(period)+"\t"
                       +str(offset)+"\t"
                       +str(k_score)+"\n")
