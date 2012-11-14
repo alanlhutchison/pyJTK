@@ -5,20 +5,13 @@ A Python Scientific Computing Package
 
 Try: `t2ahc% ./run_JTKCYCLE.py --help`
 
+####TODO: write great documentation.
+####TODO: write test cases for should_repattern option
+####TODO: write test cases fast_k_score function
 
+Hughes, Hogenesch and Kornacker (2010). ["JTK_CYCLE: An efficient nonparametric algorithm for detecting rhythmic components in genome-scale data sets."](http://www.ncbi.nlm.nih.gov/pubmed/20876817) Journal of Biological Rhythms. 25 (5): 372-380. 2010.
 
-###TODO: write great documentation.
-
-###TODO: write test cases for should_repattern option
-
-###TODO: write test cases fast_k_score function
-
-
-
-See: Hughes, Hogenesch and Kornacker (2010). Journal of Biological Rhythms.
-http://www.ncbi.nlm.nih.gov/pubmed/20876817
-
-Dependencies:
+####Dependencies:
 * Python (> 2.7.3)
 * NumPy (> 1.6.1)
 * SciPy (> 0.10.1)
