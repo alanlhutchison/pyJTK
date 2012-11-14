@@ -19,12 +19,13 @@ class JTKCycleSpec(unittest.TestCase):
        It is a parent cache for individual reference time series."""
     
     def setUp(self):
-        self.case = JTKCycle(24, 2*np.ones(12), np.arange(0,24,2))
+        self.case = JTKCycle(24, 2*np.ones(12), np.arange(0,24,2), 2)
     
     def test_initialization(self):
         """It should appropriately initialize an instance."""
         self.assertTrue(isinstance(self.case, JTKCycle))
         self.assertEqual(self.case.period, 24)
+        self.assertEqual(self.case.density, 2)
         
         self.assertEqual(len(self.case.timepoints), 12)
         self.assertEqual(len(self.case.reps), 12)
@@ -44,9 +45,9 @@ class JTKCycleSpec(unittest.TestCase):
             offsets.append(reference.offset)
         
         # check population and memoization.
-        self.assertEqual(N, 24)
-        self.assertEqual(offsets, range(24))
-        self.assertEqual(len(self.case.references), 24)
+        self.assertEqual(N, 12)
+        self.assertEqual(offsets, range(0,24,2))
+        self.assertEqual(len(self.case.references), 12)
     
     def test_run(self):
         """Top-level call iterates sequence through reference cycle."""
@@ -54,7 +55,7 @@ class JTKCycleSpec(unittest.TestCase):
         q = statistic._tau_vector(series)
         
         (offset, k_score) = self.case.run(q)
-        self.assertEqual(len(self.case.results), 24)
+        self.assertEqual(len(self.case.results), 12)
     
     def test_expansion(self):
         """It should appropriately expand a time series based on time_reps."""

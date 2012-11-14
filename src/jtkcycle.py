@@ -12,10 +12,11 @@ class JTKCycle:
     """Class that executes a series of cached JTK tests vs. cached reference
        series in a JTKCYCLE run. Builds periodic time series over offsets."""
     
-    def __init__(self, period, reps, timepoints):
-        """Init w/: search period, repetitions, and timepoints."""
+    def __init__(self, period, reps, timepoints, density):
+        """Init w/: search period, repetitions, timepoints, and density."""
         self.period = period
         self.reps = reps
+        self.density = density
         self.timepoints = np.array(timepoints,dtype='float')
         
         # initialize empty memoization caches
@@ -57,7 +58,7 @@ class JTKCycle:
     
     def generate_references(self):
         """Generates the entire reference library."""
-        for offset in np.arange(0, self.period):
+        for offset in np.arange(0, self.period, self.density):
             try:
                 yield self.references[offset]
             except:

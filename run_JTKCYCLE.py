@@ -42,12 +42,13 @@ def main(args): # argument namespace
     if fconfig != None:
         config = json.load(fconfig)
     
-    reps       = __get_value__("reps",       config) or parser.reps
-    timepoints = __get_value__("timepoints", config) or parser.timepoints
-    periods    = __get_value__("periods",    config) or periods
-    normal     = __get_value__("normal",     config) or args.normal
+    reps       = __get_value__("reps",        config) or parser.reps
+    timepoints = __get_value__("timepoints",  config) or parser.timepoints
+    periods    = __get_value__("periods",     config) or periods
+    density    = __get_value__("offset_step", config) or args.offset_step
+    normal     = __get_value__("normal",      config) or args.normal
     
-    test = JTKCycleRun(reps, timepoints, periods, normal)
+    test = JTKCycleRun(reps, timepoints, periods, density, normal)
     
     summarize = args.summarize
     __write_header__(foutput, periods, summarize)
@@ -57,7 +58,6 @@ def main(args): # argument namespace
     
     # Variables are not currently used...
     p = args.pvalue
-    offset_step = args.offset_step
     
     finput.close()
     foutput.close()

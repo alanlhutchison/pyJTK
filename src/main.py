@@ -17,12 +17,13 @@ class JTKCycleRun:
        test. Generates a statistical distribution and collection of
        reference cycles."""
     
-    def __init__(self, reps, timepoints, periods, normal=False):
+    def __init__(self, reps, timepoints, periods, density, normal=False):
         """Init w/: timepoint count, repetition spec, and search periods.
            Opt. timepoints specifies unevenly spaced time intervals."""
         self.reps = np.array(reps,dtype='float')
         self.timepoints = np.array(timepoints,dtype='float')
         self.periods = periods
+        self.density = density
         
         if normal:
             self.distribution = NormalDistribution(self.reps)
@@ -103,7 +104,8 @@ class JTKCycleRun:
                 cycle = JTKCycle(
                     period,
                     self.reps,
-                    self.timepoints
+                    self.timepoints,
+                    self.density
                     )
                 self.cycles[period] = cycle
                 yield self.cycles[period]
