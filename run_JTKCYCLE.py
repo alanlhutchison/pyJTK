@@ -50,11 +50,11 @@ def main(args): # argument namespace
     
     test = JTKCycleRun(reps, timepoints, periods, density, normal)
     
-    summarize = args.summarize
-    __write_header__(foutput, periods, summarize)
+    summary = args.summary
+    __write_header__(foutput, periods, summary)
     for name,series in parser.generate_series():
         _,_,_,_,_ = test.run(series)
-        __write_data__(foutput, name, test, summarize)
+        __write_data__(foutput, name, test, summary)
     
     # Variables are not currently used...
     p = args.pvalue
@@ -71,8 +71,8 @@ def main(args): # argument namespace
 # printer utilities
 #
 
-def __write_header__(foutput, periods, summarize=False):
-    if summarize:
+def __write_header__(foutput, periods, summary=False):
+    if summary:
         foutput.write("probeset")
         for period in sorted(periods):
             foutput.write("\t" + str(period) + "-HR")
@@ -87,8 +87,8 @@ def __write_header__(foutput, periods, summarize=False):
                       +"tau"+"\n")
     return
 
-def __write_data__(foutput, name, test, summarize=False):
-    if summarize:
+def __write_data__(foutput, name, test, summary=False):
+    if summary:
         foutput.write(name)
         for period in sorted(test.results.keys()):
             offset, k_score, p_value = test.results[period]
@@ -192,10 +192,10 @@ def __create_parser__():
                        help="configure {reps, times, periods, normal} from JSON")
 
     printer = p.add_argument_group(title="result output preferences")
-    printer.add_argument("-s", "--summarize",
+    printer.add_argument("-s", "--summary",
                          action='store_true',
                          default=False,
-                         help="print a test summary after all cycles finish")
+                         help="print summary over all periods instead of best fit")
     
     return p
 
