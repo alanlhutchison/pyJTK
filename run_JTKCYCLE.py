@@ -92,7 +92,8 @@ def __write_data__(foutput, name, test, summarize=False):
         foutput.write(name)
         for period in sorted(test.results.keys()):
             offset, k_score, p_value = test.results[period]
-            foutput.write("\t" + str(p_value))
+            outstr = str(p_value)+";"+str(period)+";"+str(offset)+";"+str(k_score)
+            foutput.write("\t" + outstr)
         else:
             foutput.write("\n")
     else:
