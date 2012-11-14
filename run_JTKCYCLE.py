@@ -5,7 +5,7 @@ import sys
 
 FPATH = os.path.dirname(os.path.realpath(__file__)),[0]
 sys.path.append(FPATH[0]+'/src')
-VERSION = "2.3.1"
+VERSION = "2.4"
 
 import json
 import unittest
