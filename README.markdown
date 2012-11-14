@@ -11,7 +11,7 @@ Try: `t2ahc% ./run_JTKCYCLE.py --help`
 * write test cases for should_repattern option
 * write test cases fast_k_score function
 
-### Reference:
+#### Reference:
 Hughes, Hogenesch, and Kornacker (2010). ["JTK_CYCLE: An efficient nonparametric algorithm for detecting rhythmic components in genome-scale data sets."](http://www.ncbi.nlm.nih.gov/pubmed/20876817) Journal of Biological Rhythms. 25 (5): 372-380. 2010.
 
 #### Dependencies:
