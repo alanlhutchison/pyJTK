@@ -17,4 +17,3 @@ Hughes, Hogenesch, and Kornacker (2010). ["JTK_CYCLE: An efficient nonparametric
 #### Dependencies:
 * Python (> 2.7.3)
 * NumPy (> 1.6.1)
-* SciPy (> 0.10.1)
