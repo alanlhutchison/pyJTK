@@ -5,6 +5,7 @@ import os.path
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 
 import numpy as np
+import math
 from scipy.stats import scoreatpercentile
 
 def make_times(timepoints, reps=1):
@@ -28,3 +29,20 @@ def est_amp(series):
     qhi = scoreatpercentile(series, 75)
     iqr = qhi - qlo
     return 1.5 * iqr
+
+def erf(x):
+    """Dependency-free computation of error function. From Handbook of
+       Mathematical Functions. (7.1.26)"""
+    x = abs(x)
+
+    a1 =  0.254829592
+    a2 = -0.284496736
+    a3 =  1.421413741
+    a4 = -1.453152027
+    a5 =  1.061405429
+    p  =  0.3275911
+
+    t = 1.0/(1.0 + p*x)
+    y = 1.0 - (((((a5*t + a4)*t) + a3)*t + a2)*t + a1)*t*math.exp(-x*x)
+    
+    return y if x >= 0 else 2-y

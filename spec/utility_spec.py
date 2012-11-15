@@ -13,6 +13,23 @@ import numpy as np
 import utility as u
 import random
 
+class ErrorFunctionSpec(unittest.TestCase):
+    """Describe the error function implementation."""
+    def test_evaluation(self):
+        self.assertTrue(u.erf(0) < 1e-6)
+    
+    def test_symmetry(self):
+        x = random.random()
+        self.assertEqual(u.erf(x), u.erf(-1 * x))
+    
+    def test_monotonicity(self):
+        x = random.random()
+        self.assertTrue(u.erf(2*x) > u.erf(x))
+    
+    def test_convergence(self):
+        within = lambda y,t: (1.0 - y) <= t
+        self.assertTrue(within(u.erf(100), 1e-3))
+
 class AmplitudeSpec(unittest.TestCase):
     """Describe amplitude estimation utility."""
     
