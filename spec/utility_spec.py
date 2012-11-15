@@ -19,14 +19,17 @@ class ErrorFunctionSpec(unittest.TestCase):
         self.assertTrue(u.erf(0) < 1e-6)
     
     def test_symmetry(self):
+        """Results should be symmetric."""
         x = random.random()
         self.assertEqual(u.erf(x), u.erf(-1 * x))
     
     def test_monotonicity(self):
+        """Series is monotone (increasing)."""
         x = random.random()
-        self.assertTrue(u.erf(2*x) > u.erf(x))
+        self.assertTrue(u.erf(2*x) >= u.erf(x))
     
     def test_convergence(self):
+        """It should converge to one."""
         within = lambda y,t: (1.0 - y) <= t
         self.assertTrue(within(u.erf(100), 1e-3))
 
@@ -55,7 +58,21 @@ class AmplitudeSpec(unittest.TestCase):
         actual = u.est_amp(vals)
         self.assertTrue(actual < 2 * expect)
         self.assertTrue(actual > 0.5 * expect)
-        
+
+class ScoreAtPercentileSpec(unittest.TestCase):
+    """Describe score at percentile retriever."""
+    
+    def test_hundred(self):
+        """It should correctly pick out the nth element of a hundred."""
+        data = np.arange(101)
+        n = random.randint(1,99)
+        self.assertEqual(n, u.__score_at_percentile__(data, n))
+    
+    def test_interpolated(self):
+        """It should correclty interpolate!"""
+        data = np.linspace(0,100,10)
+        n = random.randint(1,99)
+        self.assertEqual(n, u.__score_at_percentile__(data, n))
 
 class TimesSpec(unittest.TestCase):
     """Describe timereps array utility"""

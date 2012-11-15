@@ -6,7 +6,6 @@ sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 
 import numpy as np
 import math
-from scipy.stats import scoreatpercentile
 
 def make_times(timepoints, reps=1):
     """Generates an appropriately formatted timereps array.
@@ -25,10 +24,20 @@ def make_times(timepoints, reps=1):
 
 def est_amp(series):
     """Uses interquartile range to estimate amplitude of a time series."""
-    qlo = scoreatpercentile(series, 25)
-    qhi = scoreatpercentile(series, 75)
+    qlo = __score_at_percentile__(series, 25)
+    qhi = __score_at_percentile__(series, 75)
     iqr = qhi - qlo
     return 1.5 * iqr
+
+def __score_at_percentile__(ser, per):
+    ser = np.sort(ser, axis=0)
+    i = per/100. * (ser.shape[0] - 1)
+    if (i % 1 == 0):
+        score = ser[i]
+    else:
+        interpolate = lambda a,b,frac: a + (b - a)*frac
+        score = interpolate(ser[int(i)], ser[int(i) + 1], i % 1)
+    return score
 
 def erf(x):
     """Dependency-free computation of error function. From Handbook of
