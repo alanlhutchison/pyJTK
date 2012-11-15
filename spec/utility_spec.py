@@ -66,13 +66,13 @@ class ScoreAtPercentileSpec(unittest.TestCase):
         """It should correctly pick out the nth element of a hundred."""
         data = np.arange(101)
         n = random.randint(1,99)
-        self.assertEqual(n, u.__score_at_percentile__(data, n))
+        self.assertEqual(n, np.round(u.__score_at_percentile__(data, n), 9))
     
     def test_interpolated(self):
         """It should correclty interpolate!"""
         data = np.linspace(0,100,10)
         n = random.randint(1,99)
-        self.assertEqual(n, u.__score_at_percentile__(data, n))
+        self.assertEqual(n, np.round(u.__score_at_percentile__(data, n), 9))
 
 class TimesSpec(unittest.TestCase):
     """Describe timereps array utility"""
