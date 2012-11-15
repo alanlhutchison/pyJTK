@@ -5,8 +5,7 @@ import os.path
 sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 
 import numpy as np
-from scipy.stats import norm
-from math import sqrt
+import utility as u
 
 class NormalDistribution:
     """An normal approximation of the J-T Score distribution."""
@@ -40,9 +39,12 @@ class NormalDistribution:
         
         a = -1.0 * (score - 0.5)
         b = -1.0 * self.expected
-        c = self.stdev
         
-        p = 2.0 * norm.cdf(a,loc=b,scale=c)
+        num = np.abs(a - b)
+        den = self.stdev * np.sqrt(2)
+        
+        normal_cdf = lambda x: 1.0 - u.erf(x)
+        p = normal_cdf(num / den)
         return p
 
 if __name__ == "__main__":
