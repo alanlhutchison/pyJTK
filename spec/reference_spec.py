@@ -58,6 +58,14 @@ class ReferenceSpec(unittest.TestCase):
         expect = [0.8, 0.4, 0.2, 0.0, 0.6, 1.0]
         for p in zip(ranked, expect):
             self.assertEqual(p[0], p[1])
+    
+    def test_fractional_rankings(self):
+        """It correctly fractionally ranks elements."""
+        series = [1,3,2,2,5,4]
+        ranked = self.case.__rank__(series)
+        expect = [0.0, 0.6, 0.3, 0.3, 1.0, 0.8]
+        for p in zip(ranked, expect):
+            self.assertEqual(p[0], p[1])
         
     def tearDown(self):
         pass

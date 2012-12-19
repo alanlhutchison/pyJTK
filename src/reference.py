@@ -41,15 +41,27 @@ class Reference:
         values = np.array(f(xs + dx), dtype='float')
         return values
     
-    def __rank__(self, values):
-        """Rank-ordering of series."""
-        n = float(len(values)) - 1.0
+    def __rank__(self, data):
+        """Fractional rank ordering of elements."""
+        rank = lambda v: sorted(range(len(v)), key=v.__getitem__)
         
-        ix = range(len(values))
-        ix.sort(key=lambda j: values[j])
-        ranks = [ix.index(i) / n for i in range(len(values))]
+        n = len(data)
+        idxs=rank(data)
+        sorts=[data[idx] for idx in idxs]
         
-        return np.array(ranks, dtype='float')
+        sum_ranks = 0
+        n_ranked = 1
+        f_ranks = [0]*n
+        for i in xrange(n):
+            sum_ranks += i
+            n_ranked += 1
+            if i==n-1 or sorts[i] != sorts[i+1]:
+                avg_rank = sum_ranks / float(n_ranked)
+                for j in xrange(i-n_ranked+1,i+1):
+                    f_ranks[idxs[j]] = avg_rank
+                sum_ranks = 0
+                n_ranked = 0
+        return np.array(f_ranks, dtype='float') / float(n - 1)
     
 if __name__ == "__main__":
     print "Defines a class containing a reference series."
