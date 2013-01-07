@@ -26,8 +26,8 @@ class JTKCycleRun:
         self.periods = periods
         self.density = density
 
-        self.function = kwargs.get("function", np.cos)
-        self.symmetry = kwargs.get("symmetry", True)
+        self.__function__ = kwargs.get("function", np.cos)
+        self.__symmetry__ = kwargs.get("symmetry", True)
 
         normal = kwargs.get("normal", True)
         if normal:
@@ -64,7 +64,13 @@ class JTKCycleRun:
                 if p_value == best_p:
                     per,off = float(cycle.period),float(offset)
                     s = np.sign(k_score) or 1
-                    lag = (per + (1-s)*per/4 - off/2) % per
+
+                    # a bit of modulo arithmetic to get lag.
+                    if self.__symmetry__:
+                        lag = (per + (1-s)*per/4 - off/2) % per
+                    else:
+                        lag = ((2 * per) - off) % per
+
                     results.append(
                         (cycle.period, lag, k_score, p_value)
                         )
@@ -109,8 +115,8 @@ class JTKCycleRun:
                     self.reps,
                     self.timepoints,
                     self.density,
-                    function=self.function,
-                    symmetry=self.symmetry
+                    function=self.__function__,
+                    symmetry=self.__symmetry__
                     )
                 self.cycles[period] = cycle
                 yield self.cycles[period]
