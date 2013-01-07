@@ -23,14 +23,14 @@ class CustomFunctionSpec(unittest.TestCase):
     def test_constant(self):
         """It should make a series consisting of constant values."""
         cv = 10. * np.random.random()
-        cf = lambda x: cv
+        cf = np.frompyfunc(lambda x: cv, 1, 1)
         case = R.Reference(np.arange(0,24,2, dtype='float'), 24., 0., function=cf)
         for value in case.__values__:
             self.assertEqual(value, cv)
 
     def test_alternating(self):
         """It should generate a series with alternating +/- 1 values."""
-        af = lambda p: -1 ** int(self.reindex(p))
+        af = np.frompyfunc(lambda p: -1 ** int(self.reindex(p)), 1, 1)
         case = R.Reference(np.arange(0,24,2, dtype='float'), 24., 0., function=af)
         for i,value in enumerate(case.__values__):
             self.assertEqual(value, -1**i)
