@@ -41,11 +41,19 @@ class DistributionSelectionSepc(unittest.TestCase):
     """Describe the Null Distribution boolean selector."""
     
     def test_gaussian_distribution(self):
-        case = JTKCycleRun(np.ones(TEST_N), 2*np.arange(TEST_N), None, 2, True)
+        case = JTKCycleRun(np.ones(TEST_N),
+                           2*np.arange(TEST_N),
+                           None,
+                           2,
+                           normal=True)
         self.assertTrue(isinstance(case.distribution, NormalDistribution))
     
     def test_exact_distribution(self):
-        case = JTKCycleRun(np.ones(TEST_N), 2*np.arange(TEST_N), None, 2, False)
+        case = JTKCycleRun(np.ones(TEST_N),
+                           2*np.arange(TEST_N),
+                           None,
+                           2,
+                           normal=False)
         self.assertTrue(isinstance(case.distribution, HardingDistribution))
     
     
@@ -58,7 +66,7 @@ class RunSeriesSpec(unittest.TestCase):
                                 2 * np.arange(TEST_N),
                                 [8,12,16,20,24],
                                 2,
-                                False)
+                                normal=False)
     
     def _generate_series(self, period):
         pihat = round(np.pi,4)
