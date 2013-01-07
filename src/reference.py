@@ -19,13 +19,10 @@ class Reference:
 
         self.__xs__ = np.array(xs, dtype='float')
         self.__function__ = np.cos
-        self.__symmetry__ = True
-
+        self.__symmetry__ = kwargs.get("symmetry", True)
         if "function" in kwargs.keys():
             self.__function__ = np.frompyfunc(kwargs["function"],1,1)
             self.__symmetry__ = False
-        if "symmetry" in kwargs.keys():
-            self.__symmetry__ = kwargs["symmetry"]
 
         self.__values__ = self.__build_values__(period, offset)
 

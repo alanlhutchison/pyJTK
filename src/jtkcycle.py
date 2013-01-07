@@ -12,13 +12,16 @@ class JTKCycle:
     """Class that executes a series of cached JTK tests vs. cached reference
        series in a JTKCYCLE run. Builds periodic time series over offsets."""
     
-    def __init__(self, period, reps, timepoints, density):
+    def __init__(self, period, reps, timepoints, density, **kwargs):
         """Init w/: search period, repetitions, timepoints, and density."""
         self.period = period
         self.reps = reps
         self.density = density
         self.timepoints = np.array(timepoints,dtype='float')
-        
+
+        self.__function__ = kwargs.get("function", np.cos)
+        self.__symmetry__ = kwargs.get("symmetry", True)
+
         # initialize empty memoization caches
         self.references = {}
         self.results = {}
@@ -37,7 +40,7 @@ class JTKCycle:
                 self.__expand__(reference.series)
                 )
         r = reference.tau_vector
-        
+
         k_score = np.sum(q * r)
         return k_score
     
@@ -45,15 +48,15 @@ class JTKCycle:
         """Populates the results dictionary. Returns the best-result."""
         self.results = {} # clear previous run.
         self.best = None
-        
+
         for reference in self.generate_references():
             k_score = self.__run__(q, reference)
             offset = reference.offset
-            
+
             if self.best == None or abs(k_score) >= abs(self.best[1]):
                 self.best = (offset, k_score)
             self.results[offset] = k_score
-        
+
         return self.best
     
     def generate_references(self):
@@ -64,7 +67,9 @@ class JTKCycle:
             except:
                 self.references[offset] = Reference(self.timepoints,
                                                     self.period,
-                                                    offset)
+                                                    offset,
+                                                    function=self.__function__,
+                                                    symmetry=self.__symmetry__)
                 yield self.references[offset]
     
 if __name__ == "__main__":
