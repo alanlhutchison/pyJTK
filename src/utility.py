@@ -55,3 +55,6 @@ def erf(x):
     y = 1.0 - (((((a5*t + a4)*t) + a3)*t + a2)*t + a1)*t*math.exp(-x*x)
     
     return y if x >= 0 else 2-y
+
+if __name__ == "__main__":
+    print "This module includes utility functions for JTK Cycle."
