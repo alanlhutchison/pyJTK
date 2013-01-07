@@ -5,7 +5,7 @@ import sys
 
 FPATH = os.path.dirname(os.path.realpath(__file__)),[0]
 sys.path.append(FPATH[0]+'/src')
-VERSION = "2.7"
+VERSION = "3.1"
 
 import json
 import unittest
@@ -15,6 +15,9 @@ import argparse
 from main import JTKCycleRun
 from parsed import DataParser
 
+import waveforms as w
+import numpy as np
+
 def main(args): # argument namespace
     if args.test:
         tests = unittest.defaultTestLoader.discover(FPATH[0]+"/spec",
@@ -22,50 +25,75 @@ def main(args): # argument namespace
         test_runner = unittest.TextTestRunner(verbosity=1)
         test_runner.run(tests)
         return
-    
+
     finput = args.ifile
     foutput = args.ofile
     fconfig = args.cfile
-    
+
     parser = DataParser(finput, args.repattern)
-    
+
     max_period = (args.max or 26) + 1
     min_period = args.min or 20
     period_step = args.period_step or 2
-    
+
     try:
         periods = json.loads(args.periods)
     except:
         periods = range(min_period, max_period, period_step)
-    
+
     config = {}
     if fconfig != None:
         config = json.load(fconfig)
-    
-    reps       = __get_value__("reps",        config) or parser.reps
-    timepoints = __get_value__("timepoints",  config) or parser.timepoints
-    periods    = __get_value__("periods",     config) or periods
-    density    = __get_value__("offset_step", config) or args.offset_step
-    normal     = __get_value__("normal",      config) or args.normal
-    
-    test = JTKCycleRun(reps, timepoints, periods, density, normal)
-    
+
+    reps       = config.get("reps",        None) or parser.reps
+    timepoints = config.get("timepoints",  None) or parser.timepoints
+    periods    = config.get("periods",     None) or periods
+    density    = config.get("offset_step", None) or args.offset_step
+    normal     = config.get("normal",      None) or args.normal
+
+    function = __get_function__(args.function)
+    symmetry = (args.function != "cosine") or args.symmetry
+    test = JTKCycleRun(
+        reps,
+        timepoints,
+        periods,
+        density,
+        normal=normal,
+        function=function,
+        symmetry=symmetry
+        )
+
     summary = args.summary
     __write_header__(foutput, periods, summary)
     for name,series in parser.generate_series():
         _,_,_,_,_ = test.run(series)
         __write_data__(foutput, name, test, summary)
-    
+
     # Variables are not currently used...
     p = args.pvalue
-    
+
     finput.close()
     foutput.close()
     if fconfig != None:
         fconfig.close()
-    
+
     return
 
+def __get_function__(astr):
+    f = np.cos
+    if astr == "cosine":
+        f = np.cos
+    elif astr == "rampup":
+        f = np.frompyfunc(w.ramp_up, 1, 1)
+    elif astr == "rampdown":
+        f = np.frompyfunc(w.ramp_down, 1, 1)
+    elif astr == "impulse":
+        f = np.frompyfunc(w.impulse, 1, 1)
+    elif astr == "step":
+        f = np.frompyfunc(w.step, 1, 1)
+    else:
+        f = np.cos
+    return f
 
 #
 # printer utilities
@@ -113,12 +141,6 @@ def __write_data__(foutput, name, test, summary=False):
 # runner script utilities
 #
 
-def __get_value__(k,d):
-    try:
-        return d[k]
-    except:
-        return None
-
 def __create_parser__():
     p = argparse.ArgumentParser(
         description="python script runner for JTK_CYCLE statistical test",
@@ -142,6 +164,19 @@ def __create_parser__():
                           action='store_true',
                           default=False,
                           help="use normal approximation to null distribution")
+    analysis.add_argument("--function",
+                          dest="function",
+                          type=str,
+                          metavar="$FUNC_STR",
+                          action='store',
+                          default="cosine",
+                          choices=["cosine","rampup","rampdown","step","impulse"],
+                          help="cosine (dflt), rampup, rampdown, impulse, step")
+    analysis.add_argument("--assymetric",
+                          dest="symmetry",
+                          action="store_false",
+                          default=True,
+                          help="flag for half-density lags")
     
     periods = p.add_argument_group(title="JTK_CYCLE custom search periods")
     periods.add_argument("--periods",
@@ -171,7 +206,7 @@ def __create_parser__():
     parser.add_argument("-r", "--repattern",
                         action='store_true',
                         default=False,
-                        help="use header line to re-order data series by ZT")
+                        help="use header to re-order data series by ZT")
     
     files = p.add_argument_group(title="files & I/O management options")
     files.add_argument("-i", "--input",
@@ -179,7 +214,7 @@ def __create_parser__():
                        metavar="FILENM",
                        default="-",
                        type=argparse.FileType('r'),
-                       help="file from which to read data to run (dflt: stdin)")
+                       help="file from which to read data (dflt: stdin)")
     files.add_argument("-o", "--output",
                        dest="ofile",
                        metavar="FILENM",
@@ -190,13 +225,13 @@ def __create_parser__():
                        dest="cfile",
                        metavar="FILENM",
                        type=argparse.FileType('r'),
-                       help="configure {reps, times, periods, normal} from JSON")
+                       help="read {reps,times,periods,normal} from JSON")
 
     printer = p.add_argument_group(title="result output preferences")
     printer.add_argument("-s", "--summary",
                          action='store_true',
                          default=False,
-                         help="print summary over all periods instead of best fit")
+                         help="print summary over all searched periods")
     
     return p
 

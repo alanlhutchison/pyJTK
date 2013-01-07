@@ -7,11 +7,12 @@ sys.path.append(os.path.dirname(os.path.realpath(__file__)))
 import numpy as np
 
 import utility as u
+from jtkcycle import JTKCycle
+import statistic
+
 from normal import NormalDistribution
 from generated import GeneratedDistribution
 from harding import HardingDistribution
-from jtkcycle import JTKCycle
-import statistic
 
 class JTKCycleRun:
     """Class encapsulating the logic for running a JTK-CYCLE statistical
