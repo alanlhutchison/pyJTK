@@ -88,7 +88,7 @@ class HardingDistribution:
         ucdf = total - ucdf
         return ucdf
     
-    def p_value(self, S):
+    def p_value(self, S, **kwargs):
         """Publically invoked method, returns a p-value for a given Score."""
         if not S:
             p = 1.0

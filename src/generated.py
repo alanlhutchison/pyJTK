@@ -28,7 +28,7 @@ class GeneratedDistribution:
         n = self.reference.size
         return np.random.random((self.N, n))
     
-    def p_value(self, S):
+    def p_value(self, S, **kwargs):
         leqs = np.sum(np.ones(self.N)[self.scores >= np.abs(S)])
         return leqs / float(self.N)
     

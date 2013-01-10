@@ -29,7 +29,7 @@ class NormalDistribution:
         
         return sdv
     
-    def p_value(self, S):
+    def p_value(self, S, **kwargs):
         """Public handle for generating a p-value from a tau score S."""
         if not S:
             return 1.0
