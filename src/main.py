@@ -111,6 +111,11 @@ class JTKCycleRun:
             self.results[period] = (offset, k_score, p_value)
 
         for cycle in self.generate_jtk_cycles():
+            period = cycle.period
+            p = lambda k: self.bonferroni_adjust(
+                self.distribution.p_value(k, period=period)
+                )
+
             k_score = cycle.best[1]
             p_value = p(k_score)
             if p_value == best_p:
