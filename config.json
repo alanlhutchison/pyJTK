@@ -3,5 +3,4 @@
     "timepoints": [0, 1, 4, 5, 8, 9, 12, 13, 16, 17, 20, 21],
     "periods": [20, 22, 24],
     "offset_step": 2,
-    "normal": false
 }

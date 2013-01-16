@@ -30,17 +30,26 @@ class JTKCycleRun:
         self.__function__ = kwargs.get("function", np.cos)
         self.__symmetry__ = kwargs.get("symmetry", True)
 
-        normal = kwargs.get("normal", True)
-        if normal:
-            self.distribution = NormalDistribution(self.reps)
-        else:
-            self.distribution = HardingDistribution(self.reps)
-
         # initialize empty lookup table for test cycles and results.
         self.cycles = {}
         self.results = {}
         self.best = None
-    
+
+        distribution = kwargs.get("distribution", "harding")
+        if distribution == "harding":
+            self.distribution = HardingDistribution(self.reps)
+        elif distribution == "normal":
+            self.distribution = NormalDistribution(self.reps)
+        elif distribution == "generated":
+            self.distribution = GeneratedDistribution()
+
+            # populate different reference series at each period
+            for cycle in self.generate_jtk_cycles():
+                period = cycle.period
+                for reference in cycle.generate_references():
+                    self.distribution.add_reference(period, reference.series)
+                    break
+
     def __find_best__(self, series, cycles, best_p):
         results = self.__find_matches__(cycles, best_p)
 

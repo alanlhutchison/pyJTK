@@ -49,16 +49,25 @@ def main(args): # argument namespace
     timepoints = config.get("timepoints",  None) or parser.timepoints
     periods    = config.get("periods",     None) or periods
     density    = config.get("offset_step", None) or args.offset_step
-    normal     = config.get("normal",      None) or args.normal
 
     function = __get_function__(args.function)
     symmetry = (args.function != "cosine") or args.symmetry
+
+    if args.function != "cosine":
+        distribution = "generated"
+    elif args.normal:
+        distribution = "normal"
+    elif args.generated:
+        distribution = "generated"
+    else:
+        distribution = "harding"
+
     test = JTKCycleRun(
         reps,
         timepoints,
         periods,
         density,
-        normal=normal,
+        distribution=distribution,
         function=function,
         symmetry=symmetry
         )
@@ -159,11 +168,6 @@ def __create_parser__():
                           type=float,
                           default=0.01,
                           help="set p-value to define significance (dflt: 0.01)")
-    analysis.add_argument("-n", "--normal",
-                          dest="normal",
-                          action='store_true',
-                          default=False,
-                          help="use normal approximation to null distribution")
     analysis.add_argument("--function",
                           dest="function",
                           type=str,
@@ -177,6 +181,23 @@ def __create_parser__():
                           action="store_false",
                           default=True,
                           help="flag for half-density lags")
+
+    distribution = analysis.add_mutually_exclusive_group(required=False)
+    distribution.add_argument("-e", "--exact",
+                              dest="harding",
+                              action='store_true',
+                              default=False,
+                              help="use Harding's exact null distribution (dflt)")
+    distribution.add_argument("-n", "--normal",
+                              dest="normal",
+                              action='store_true',
+                              default=False,
+                              help="use normal approximation to null distribution")
+    distribution.add_argument("-g", "--generate",
+                              dest="generated",
+                              action='store_true',
+                              default=False,
+                              help="use a Monte Carlo generated null distribution")
     
     periods = p.add_argument_group(title="JTK_CYCLE custom search periods")
     periods.add_argument("--periods",
@@ -225,7 +246,7 @@ def __create_parser__():
                        dest="cfile",
                        metavar="FILENM",
                        type=argparse.FileType('r'),
-                       help="read {reps,times,periods,normal} from JSON")
+                       help="read {reps,times,periods,density} from JSON")
 
     printer = p.add_argument_group(title="result output preferences")
     printer.add_argument("-s", "--summary",
