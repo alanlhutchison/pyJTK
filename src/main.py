@@ -127,7 +127,7 @@ class JTKCycleRun:
 
     def bonferroni_adjust(self, p_value):
         """Applies test-specific bonferroni correction to a p-value."""
-        n = np.sum(self.periods)
+        n = np.sum(self.periods) / self.density
         return min(1.0, n * p_value)
 
 if __name__ == "__main__":

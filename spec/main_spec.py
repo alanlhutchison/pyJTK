@@ -89,7 +89,7 @@ class RunSeriesSpec(unittest.TestCase):
 class BonferroniSpec(unittest.TestCase):
     def setUp(self):
         periods = [random.randint(1,10) for i in range(5)]
-        self.case = JTKCycleRun(np.ones(TEST_N),2*np.arange(TEST_N),periods,2)
+        self.case = JTKCycleRun(np.ones(TEST_N),2*np.arange(TEST_N),periods,1)
         self.factor = sum(periods)
     
     def test_bonferroni(self):
