@@ -63,10 +63,13 @@ class JTKCycleRun:
     
     def __find_matches__(self, cycles, best_p):
         """Searches child trees for equivalently high-scoring values."""
-        p = lambda k: self.bonferroni_adjust(self.distribution.p_value(k))
-
         results = []
         for cycle in cycles:
+            period = cycle.period
+            p = lambda k: self.bonferroni_adjust(
+                self.distribution.p_value(k, period=period)
+                )
+
             for offset in cycle.results.keys():
                 k_score = cycle.results[offset]
                 p_value = p(k_score)
