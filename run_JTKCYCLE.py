@@ -48,7 +48,7 @@ def main(args): # argument namespace
     reps       = config.get("reps",        None) or parser.reps
     timepoints = config.get("timepoints",  None) or parser.timepoints
     periods    = config.get("periods",     None) or periods
-    density    = config.get("offset_step", None) or args.offset_step
+    density    = config.get("offset_step", None) or args.offset_step or 2.0
 
     function = __get_function__(args.function)
     symmetry = (args.function != "cosine") or args.symmetry
