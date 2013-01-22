@@ -11,7 +11,6 @@ from jtkcycle import JTKCycle
 import statistic
 
 from normal import NormalDistribution
-from generated import GeneratedDistribution
 from harding import HardingDistribution
 
 class JTKCycleRun:
@@ -30,25 +29,17 @@ class JTKCycleRun:
         self.__function__ = kwargs.get("function", np.cos)
         self.__symmetry__ = kwargs.get("symmetry", True)
 
+        distribution = kwargs.get("distribution", "harding")
+        if distribution == "normal":
+            self.distribution = NormalDistribution(self.reps)
+        else:
+            self.distribution = HardingDistribution(self.reps)
+
         # initialize empty lookup table for test cycles and results.
         self.cycles = {}
         self.results = {}
         self.best = None
 
-        distribution = kwargs.get("distribution", "harding")
-        if distribution == "harding":
-            self.distribution = HardingDistribution(self.reps)
-        elif distribution == "normal":
-            self.distribution = NormalDistribution(self.reps)
-        elif distribution == "generated":
-            self.distribution = GeneratedDistribution()
-
-            # populate different reference series at each period
-            for cycle in self.generate_jtk_cycles():
-                period = cycle.period
-                for reference in cycle.generate_references():
-                    self.distribution.add_reference(period, reference.series)
-                    break
 
     def __find_best__(self, series, cycles, best_p):
         results = self.__find_matches__(cycles, best_p)
@@ -144,7 +135,7 @@ class JTKCycleRun:
 
     def bonferroni_adjust(self, p_value):
         """Applies test-specific bonferroni correction to a p-value."""
-        n = np.sum(self.periods) / self.density
+        n = np.sum(self.periods)
         return min(1.0, n * p_value)
 
 if __name__ == "__main__":

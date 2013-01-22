@@ -48,17 +48,13 @@ def main(args): # argument namespace
     reps       = config.get("reps",        None) or parser.reps
     timepoints = config.get("timepoints",  None) or parser.timepoints
     periods    = config.get("periods",     None) or periods
-    density    = config.get("offset_step", None) or args.offset_step or 2.0
+    density    = config.get("offset_step", None) or args.offset_step
 
     function = __get_function__(args.function)
     symmetry = (args.function != "cosine") or args.symmetry
 
-    if args.function != "cosine":
-        distribution = "generated"
-    elif args.normal:
+    if args.normal:
         distribution = "normal"
-    elif args.generated:
-        distribution = "generated"
     else:
         distribution = "harding"
 
@@ -193,11 +189,6 @@ def __create_parser__():
                               action='store_true',
                               default=False,
                               help="use normal approximation to null distribution")
-    distribution.add_argument("-g", "--generate",
-                              dest="generated",
-                              action='store_true',
-                              default=False,
-                              help="use a Monte Carlo generated null distribution")
     
     periods = p.add_argument_group(title="JTK_CYCLE custom search periods")
     periods.add_argument("--periods",

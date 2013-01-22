@@ -20,7 +20,7 @@ def ramp_up(x, w=3*np.pi/2):
     y = x/w if x <= w else 0.0
     return y
 
-def impulse(x, w=np.pi/8):
+def impulse(x, w=3*np.pi/4):
     x = __make_proper__(x)
     d = min(x, np.pi*2 - x)
     y = max(-1.*d/w + 1.0, 0.0)
@@ -28,7 +28,7 @@ def impulse(x, w=np.pi/8):
 
 def step(x):
     x = __make_proper__(x)
-    y = 1.0 if x < np.pi else 0.0
+    y = 1.0 if x < np.pi else 0.5
     return y
 
 if __name__ == "__main__":

@@ -15,7 +15,6 @@ import unittest
 from main import JTKCycleRun
 from harding import HardingDistribution
 from normal import NormalDistribution
-from generated import GeneratedDistribution
 
 TEST_N = 12
 
@@ -56,14 +55,6 @@ class DistributionSelectionSepc(unittest.TestCase):
                            2,
                            distribution="harding")
         self.assertTrue(isinstance(case.distribution, HardingDistribution))
-    
-    def test_monte_carlo_distribution(self):
-        case = JTKCycleRun(np.ones(TEST_N),
-                           2*np.arange(TEST_N),
-                           [22,24,26],
-                           2,
-                           distribution="generated")
-        self.assertTrue(isinstance(case.distribution, GeneratedDistribution))
 
 class RunSeriesSpec(unittest.TestCase):
     """Describe the JTK Cycle Behaviour."""
