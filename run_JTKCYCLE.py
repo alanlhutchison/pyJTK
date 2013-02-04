@@ -50,7 +50,7 @@ def main(args): # argument namespace
     periods    = config.get("periods",     None) or periods
     density    = config.get("offset_step", None) or args.offset_step
 
-    function = __get_function__(args.function, args.width)
+    function = __get_function__(args.function, args.width * np.pi * 2)
     symmetry = (args.function != "cosine") or args.symmetry
 
     if args.normal:
@@ -190,7 +190,7 @@ def __create_parser__():
                           metavar="W",
                           action='store',
                           default=None,
-                          help="shape parameter for alt. waveforms")
+                          help="shape parameter for alt. waveforms \in [0,1]")
     analysis.add_argument("-p", "--pvalue",
                           metavar="P",
                           type=float,

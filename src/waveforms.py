@@ -29,7 +29,7 @@ def impulse(x, w=None):
         w = 3*np.pi/4
     x = __make_proper__(x)
     d = min(x, np.abs(np.pi*2 - x))
-    y = max(-1.*d/w + 1.0, 0.0)
+    y = max(-2.*d/w + 1.0, 0.0)
     return y
 
 def step(x, w=None):
