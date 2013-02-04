@@ -107,13 +107,13 @@ class ImpulseSpec(unittest.TestCase):
         self.assertEqual(w.impulse(0.0), 1.0)
 
     def test_baseline(self):
-        """It should be zero-valued midphase."""
+        """It should be zero-valued downphase."""
         impulse = np.frompyfunc(w.impulse,1,1)
-        xs = np.linspace(np.pi/4, 7*np.pi/4, 100)
+        xs = np.linspace(3*np.pi/4, 5*np.pi/4, 100)
         ys = impulse(xs)
         for y in ys:
             self.assertEqual(y, 0.0)
-
+    
     def test_decreasing(self):
         """It should decrease monotonically following peak."""
         impulse = np.frompyfunc(w.impulse,1,1)
