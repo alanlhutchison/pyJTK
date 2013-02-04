@@ -50,7 +50,7 @@ def main(args): # argument namespace
     periods    = config.get("periods",     None) or periods
     density    = config.get("offset_step", None) or args.offset_step
 
-    function = __get_function__(args.function)
+    function = __get_function__(args.function, args.width)
     symmetry = (args.function != "cosine") or args.symmetry
 
     if args.normal:
@@ -84,18 +84,30 @@ def main(args): # argument namespace
 
     return
 
-def __get_function__(astr):
+def __get_function__(astr, width):
     f = np.cos
     if astr == "cosine":
         f = np.cos
     elif astr == "rampup":
-        f = np.frompyfunc(w.ramp_up, 1, 1)
+        f = np.frompyfunc(
+            lambda x: w.ramp_up(x, width),
+            1, 1
+            )
     elif astr == "rampdown":
-        f = np.frompyfunc(w.ramp_down, 1, 1)
+        f = np.frompyfunc(
+            lambda x: w.ramp_down(x, width),
+            1, 1
+            )
     elif astr == "impulse":
-        f = np.frompyfunc(w.impulse, 1, 1)
+        f = np.frompyfunc(
+            lambda x: w.impulse(x, width),
+            1, 1
+            )
     elif astr == "step":
-        f = np.frompyfunc(w.step, 1, 1)
+        f = np.frompyfunc(
+            lambda x: w.step(x, width),
+            1, 1
+            )
     else:
         f = np.cos
     return f
@@ -159,11 +171,6 @@ def __create_parser__():
                    help="run the Python unittest testing suite")
 
     analysis = p.add_argument_group(title="JTK_CYCLE analysis options")
-    analysis.add_argument("-p", "--pvalue",
-                          metavar="P",
-                          type=float,
-                          default=0.01,
-                          help="set p-value to define significance (dflt: 0.01)")
     analysis.add_argument("--function",
                           dest="function",
                           type=str,
@@ -177,6 +184,19 @@ def __create_parser__():
                           action="store_false",
                           default=True,
                           help="flag for half-density lags")
+    analysis.add_argument("-w", "--width",
+                          dest="width",
+                          type=float,
+                          metavar="W",
+                          action='store',
+                          default=None,
+                          help="shape parameter for alt. waveforms")
+    analysis.add_argument("-p", "--pvalue",
+                          metavar="P",
+                          type=float,
+                          default=0.01,
+                          help="set p-value to define significance (dflt: 0.01)")
+
 
     distribution = analysis.add_mutually_exclusive_group(required=False)
     distribution.add_argument("-e", "--exact",
