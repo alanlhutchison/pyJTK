@@ -189,7 +189,7 @@ def __create_parser__():
                           type=float,
                           metavar="W",
                           action='store',
-                          default=None,
+                          default=0.75,
                           help="shape parameter for alt. waveforms \in [0,1]")
     analysis.add_argument("-p", "--pvalue",
                           metavar="P",
